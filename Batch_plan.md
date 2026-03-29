@@ -18,7 +18,8 @@
 *   `SwallowSyncJob`: 從外部 FTP 擷取資料，並與 `MSG_SWAL_SYNC` 暫存表對應。
 *   `HrSyncJob`: 同步員工在職狀態，更新 `HR_USER` 與 `HR_UNIT`。
 *   `PdfImportJob`: 掃描 FTP，將原始 PDF 匯入系統並更新 `MSG_HISTORY`。
-*   `ReservationMergeJob`: 針對已放行的下載預約，進行實體 PDF 檔案合併與準備。
+*   `ReservationMergeJob`: 針對已放行的下載預約，進行實體 PDF 檔案合併與準備，並將合併後的檔案路徑更新至預約單。
+*   **日誌記錄**: 每個 Job 執行時均須記錄詳細歷程至 `JOBS_LOGS` 表。
 
 ### 2.3 排程與重試機制
 *   **定時觸發**:

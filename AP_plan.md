@@ -7,8 +7,8 @@
     - **Spring Security**: 處理 SSO 與開發模式驗證。
     - **Spring Data JPA**: 資料持久化 (基礎 CRUD)。
     - **NamedParameterJdbcTemplate**: 處理複雜、高效能 Native SQL 查詢。
-    - **Spring AOP**: 實作自動化稽核日誌。
-    - **Spring Validation**: 入參檢核。
+    - **Spring AOP**: 實作自動化稽核日誌，系統例外記錄至 `SYS_LOGS`。
+    - **Spring Validation**: 入參檢核與權限標籤校驗。
 
 ## 二、 系統規劃 (System Planning)
 ### 2.1 專案結構
@@ -24,7 +24,7 @@
 ### 2.3 核心服務設計
 *   `ISwiftParserService`: 電文 (MT/MX) 結構化解析。
 *   `IPdfEngineService`: 電文轉 PDF 及合併 PDF。
-*   `LoggingService`: AOP 實作雙重寫入 (`SYS_LOG` 與 `USER_LOG`)。
+*   `LoggingService`: AOP 實作雙重寫入 (`SYS_LOGS`：系統錯誤與例外, `USER_LOGS`：使用者行為)。
 *   **資料存取策略**: 
     - 簡單查詢: 使用 JPA Repository。
     - 複雜/高效能查詢: 於 `NativeQueryRepository` 中實作 SQL。
@@ -42,4 +42,5 @@
 - [ ] **Step 4: 業務 API 開發**
     - `MessageApiController`: 查詢、PDF 預覽、單筆串流下載。
     - `DownloadReservationController`: 提交 `MSG_DOWNLOAD` 預約、查詢進度與合併後檔案下載。
-    - `ApprovalApiController`: 針對 `USER_ROLE` 與 `MSG_APPROVAL` 之放行審核。
+    - `UserCustController`: `USER_CUST` 表格之 CRUD 申請 (由 `PARAM_MAKER` 發起)。
+    - `ApprovalApiController`: 針對 `USER_ROLE`、`MSG_APPROVAL` 與 `USER_CUST` 之放行審核 (需實現「分行類」與「參數類」之業務隔離)。
