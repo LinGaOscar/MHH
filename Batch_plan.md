@@ -3,8 +3,8 @@
 ## 一、 技術架構 (Technical Architecture)
 *   **語言與框架**: Java 21 + Spring Boot 4.0.5
 *   **批次處理**: Spring Batch 5.x
-*   **排程配置**: @Scheduled + Cron 排程描述。
-*   **外部設定**: `application.yml` (FTPConfig, Cron 參數)。
+*   **排程配置**: `TaskScheduler` 動態排程 (每 20 分鐘與 `JOBS_CONF` 同步)。
+*   **外部設定**: `application.yml` (FTPConfig, 資料庫連線)。
 
 ## 二、 系統規劃 (System Planning)
 ### 2.1 專案結構
@@ -18,17 +18,18 @@
 *   `SwallowSyncJob`: 從外部 FTP 擷取資料，並與 `MSG_SWAL_SYNC` 暫存表對應。
 *   `HrSyncJob`: 同步員工在職狀態，更新 `HR_USER` 與 `HR_UNIT`。
 *   `PdfImportJob`: 掃描 FTP，將原始 PDF 匯入系統並更新 `MSG_HISTORY`。
-*   `ReservationMergeJob`: 針對已放行的下載預約，進行實體 PDF 檔案合併與準備，並更新狀態與 `EXPIRY_DATE` (6 個月)。同時包含「過期檔案清理」子任務。
+*   `ReservationMergeJob`: 針對已放行的下載預約，進行實體 PDF 檔案合併與準備。
 *   `LogCleanupJob`: 每日執行，清理超過一年之 `SYS_LOGS` 與 `USER_LOGS`。
+*   **動態排程服務 (JobRefresher)**:
+    - 啟動後每一 20 分鐘掃描 `JOBS_CONF`。
+    - 根據 `IS_ENABLED` 與 `CRON_EXPRESSION` 動態開啟/關閉或更換任務時間。
+    - 不提供前端介面調整，僅由 IT 手動到 DB 更新此配置。
 *   **日誌記錄**: 每個 Job 執行時均須記錄詳細歷程至 `JOBS_LOGS` 表。
 
 ### 2.3 排程與重試機制
 *   **定時觸發**:
-    - `SwallowSyncJob`: 每日 01:00。
-    - `HrSyncJob`: 每日 02:00。
-    - `PdfImportJob`: 每日 23:00。
-    - `ReservationMergeJob`: 每 5 分鐘執行一次 (近即時合併)。
-    - `LogCleanupJob`: 每日凌晨 03:00。
+    - `JobRefresher`: 啟動時立即執行，隨後每 20 分鐘執行一次。
+    - 其他所有任務（`SwallowSyncJob`, `HrSyncJob`, `PdfImportJob`, `ReservationMergeJob`, `LogCleanupJob`）之 Cron 一律從資料庫動態獲取。
 *   **錯誤重試**: 使用 Spring Retry 實作 FTP 連線重試與資料庫存取失敗重試。
 
 ## 三、 建置步驟 (Building Steps)

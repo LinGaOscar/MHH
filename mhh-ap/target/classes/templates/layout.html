@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MHH - Message History Hub</title>
+    <!-- Placeholder for offline CSS -->
+    <link rel="stylesheet" th:href="@{/lib/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <main layout:fragment="content" class="container mt-4">
+        <!-- Content will be injected here -->
+    </main>
+
+    <footer class="mt-5 py-3 text-center border-top">
+        <p>&copy; 2026 MHH Project</p>
+    </footer>
+
+    <!-- Placeholder for offline JS -->
+    <script th:src="@{/lib/vue.global.js}"></script>
+    <script th:src="@{/lib/axios.min.js}"></script>
+    <script th:src="@{/lib/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

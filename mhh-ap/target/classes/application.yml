@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: mhh-ap
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=MHH_DB;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: YourPassword123
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.SQLServerDialect
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+
+server:
+  port: 8080
+
+mhh:
+  auth:
+    dev-mode: true # 開發模式開關
+  jobs:
+    cron:
+      reservation-merge: "0 0/5 * * * ?"

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+<body>
+    <div layout:fragment="content">
+        <div class="jumbotron">
+            <h1 class="display-4" th:text="#{welcome.title}">Welcome to MHH</h1>
+            <p class="lead">Message History Hub provides centralized message search and download services.</p>
+            <hr class="my-4">
+            <p>Select an option from the menu or check your tasks on the <a th:href="@{/dashboard}">Dashboard</a>.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -56,19 +56,23 @@ SELECT * FROM [USER]; -- 應該會看到 ADMIN 與測試帳號
 SELECT * FROM [JOBS_CONF]; -- 應該會看到初始排程配置
 ```
 
-### 2.3 常用指令
-*   **查看初始化進度**:
-    ```powershell
-    docker logs -f mhh-db-init
+### 2.3 排程任務維護 (IT 用)
+由於 `mhh-batch` 採動態排程機制且無前端介面，IT 人員需直接在 `JOBS_CONF` 表中操作以調整任務。所有變動會在 **20 分鐘內** 自動生效。
+
+*   **查看所有任務狀態**:
+    ```sql
+    SELECT * FROM [JOBS_CONF];
     ```
-*   **停止並移除容器**:
-    ```powershell
-    docker-compose down
+*   **暫停某個任務 (例如：暫停同步)**:
+    ```sql
+    UPDATE [JOBS_CONF] SET [IS_ENABLED] = 0 WHERE [JOB_NAME] = 'SwallowSyncJob';
     ```
-*   **重置所有資料 (含磁碟卷)**:
-    ```powershell
-    docker-compose down -v
+*   **修改執行時間 (例如：改為每小時合併一次)**:
+    ```sql
+    UPDATE [JOBS_CONF] SET [CRON_EXPRESSION] = '0 0 * * * ?' WHERE [JOB_NAME] = 'ReservationMergeJob';
     ```
+
+### 2.4 系統常用指令
 
 ## 3. 注意事項 (Notes)
 - **密碼強度**: MS SQL Server 預設密碼需符合複雜度要求（含大小寫英文字母、數字及特殊符號）。

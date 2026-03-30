@@ -18,9 +18,5 @@ spring:
 
 mhh:
   jobs:
-    cron:
-      swallow-sync: "0 0 1 * * ?"
-      hr-sync: "0 0 2 * * ?"
-      pdf-import: "0 0 23 * * ?"
-      reservation-merge: "0 0/5 * * * ?"
-      log-cleanup: "0 0 3 * * ?"
+    refresh-rate: 20m # 每 20 分鐘同步一次 JOBS_CONF
+    # 實際 Job 之 Cron 與啟用狀態一律從資料庫 JOBS_CONF 讀取

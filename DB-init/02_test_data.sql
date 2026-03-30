@@ -20,12 +20,12 @@ INSERT INTO [USER_ROLE] ([USER_ID], [ROLE_NAME], [COUNTRY_CODE]) VALUES
 ('MAKER_HK', 'BRANCH_MAKER', 'HK');
 
 -- Job Configurations
-INSERT INTO [JOBS_CONF] ([JOB_NAME], [CRON_EXPRESSION], [IS_ENABLED]) VALUES 
-('SwallowSyncJob', '0 0 1 * * ?', 1),
-('HrSyncJob', '0 0 2 * * ?', 1),
-('PdfImportJob', '0 0 23 * * ?', 1),
-('ReservationMergeJob', '0 0/5 * * * ?', 1),
-('LogCleanupJob', '0 0 3 * * ?', 1);
+INSERT INTO [JOBS_CONF] ([JOB_NAME], [DESCRIPTION], [CRON_EXPRESSION], [IS_ENABLED]) VALUES 
+('SwallowSyncJob', '從 FTP 同步 SWALLOW 原始電文資料', '0 0 1 * * ?', 1),
+('HrSyncJob', '同步 HR 員工在職狀態與組織架構', '0 0 2 * * ?', 1),
+('PdfImportJob', '掃描並匯入原始 PDF 檔案至 MSG_HISTORY', '0 0 23 * * ?', 1),
+('ReservationMergeJob', '處理已放行的電文預約下載與 PDF 合併', '0 0/5 * * * ?', 1),
+('LogCleanupJob', '清理超過一年的 SYS_LOGS 與 USER_LOGS', '0 0 3 * * ?', 1);
 
 -- Sample Message History
 INSERT INTO [MSG_HISTORY] ([REFERENCE_NO], [SENDER_BIC], [RECEIVER_BIC], [MSG_TYPE], [MSG_CONTENT], [TRANS_DATE]) VALUES 

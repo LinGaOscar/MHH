@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: mhh-batch
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=MHH_DB;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: YourPassword123
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: always
+
+mhh:
+  jobs:
+    refresh-rate: 20m # 每 20 分鐘同步一次 JOBS_CONF
+    # 實際 Job 之 Cron 與啟用狀態一律從資料庫 JOBS_CONF 讀取
