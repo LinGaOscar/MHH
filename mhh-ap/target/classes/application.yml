@@ -20,6 +20,10 @@ spring:
     suffix: .html
     mode: HTML
     encoding: UTF-8
+  messages:
+    basename: messages
+    encoding: UTF-8
+    fallback-to-system-locale: true
 
 server:
   port: 8080

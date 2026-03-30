@@ -1,27 +1,40 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MHH - Message History Hub</title>
-    <!-- Placeholder for offline CSS -->
-    <link rel="stylesheet" th:href="@{/lib/bootstrap.min.css}">
+    <!-- Premium UI Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/main.css}">
 </head>
 <body>
-    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-    <main layout:fragment="content" class="container mt-4">
-        <!-- Content will be injected here -->
-    </main>
+        <!-- Main Wrapper -->
+        <div class="main-wrapper">
+            <!-- Header -->
+            <div th:replace="~{fragments/header :: header}"></div>
 
-    <footer class="mt-5 py-3 text-center border-top">
-        <p>&copy; 2026 MHH Project</p>
-    </footer>
+            <!-- Page Content -->
+            <main layout:fragment="content" class="content-area">
+                <!-- Content will be injected here -->
+            </main>
 
-    <!-- Placeholder for offline JS -->
-    <script th:src="@{/lib/vue.global.js}"></script>
-    <script th:src="@{/lib/axios.min.js}"></script>
-    <script th:src="@{/lib/bootstrap.bundle.min.js}"></script>
+            <footer class="mt-auto py-3 text-center border-top" style="border-color: var(--border-color)">
+                <p class="text-muted small">&copy; 2026 MHH Project - Secure Message Hub</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </body>
 </html>

@@ -33,20 +33,20 @@ public class SecurityConfig {
             http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/css/**", "/js/**", "/lib/**", "/images/**", "/favicon.ico").permitAll()
+                    .requestMatchers("/css/**", "/js/**", "/lib/**", "/images/**", "/favicon.ico", "/sso/login").permitAll()
                     .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                    .defaultSuccessUrl("/", true)
+                    .defaultSuccessUrl("/dashboard", true) // 登入成功後改去 Dashboard，避免無限循環於 /
                     .permitAll()
                 )
                 .logout(logout -> logout.permitAll());
         } else {
-            // 正式模式：關閉登入畫面，僅攔截所有請求 (預期由未來之 SSO Filter 處理)
+            // 正式模式：僅允許 SSO 路徑與靜態資源
             http
-                .csrf(AbstractHttpConfigurer::disable) // 預設關閉以配合 SSO
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/css/**", "/js/**", "/lib/**", "/favicon.ico").permitAll()
+                    .requestMatchers("/css/**", "/js/**", "/lib/**", "/images/**", "/favicon.ico", "/sso/login").permitAll()
                     .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults()); // 提供基礎攔截，或是視需要關閉

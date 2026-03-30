@@ -1,26 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-    <header th:fragment="header">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container">
-                <a class="navbar-brand" href="#">MHH</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navContent">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item"><a class="nav-link" th:href="@{/dashboard}">Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{/query}">Message Search</a></li>
-                    </ul>
-                    <div class="d-flex text-white-50">
-                        <span th:text="${userName}">Guest</span>
-                        <span class="mx-2">|</span>
-                        <span th:text="${countryCode}">TW</span>
-                    </div>
-                </div>
+    <header th:fragment="header" class="header">
+        <div class="user-info">
+            <div class="user-details">
+                <span class="user-name" th:text="${#authentication.name}">Admin</span>
+                <span class="user-role" th:text="${#authentication.authorities}">ROLE_ADMIN</span>
             </div>
-        </nav>
+            <div class="avatar">
+                <span th:text="${#strings.substring(#authentication.name,0,1).toUpperCase()}">A</span>
+            </div>
+        </div>
     </header>
 </body>
 </html>
