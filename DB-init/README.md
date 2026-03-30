@@ -63,14 +63,23 @@ SELECT * FROM [JOBS_CONF]; -- 應該會看到初始排程配置
     ```sql
     SELECT * FROM [JOBS_CONF];
     ```
+*   **資料表說明**:
+    *   `JOBS_CONF`: 任務主表，包含各項 Job 的 Cron 設定與開關。
+    *   `JOBS_LOGS`: 任務執行流水帳（由 AOP 自動記錄，預設 **保留 3 個月**，由 `LogCleanupJob` 定期清理）。
+    *   `SYS_LOGS`: 系統級錯誤日誌。
 *   **暫停某個任務 (例如：暫停同步)**:
     ```sql
     UPDATE [JOBS_CONF] SET [IS_ENABLED] = 0 WHERE [JOB_NAME] = 'SwallowSyncJob';
     ```
 *   **修改執行時間 (例如：改為每小時合併一次)**:
     ```sql
-    UPDATE [JOBS_CONF] SET [CRON_EXPRESSION] = '0 0 * * * ?' WHERE [JOB_NAME] = 'ReservationMergeJob';
+    -- 將分鐘設為 0，其餘保持原樣即可實現每小時整點觸發
+    UPDATE [JOBS_CONF] SET [CRON_MIN] = '0' WHERE [JOB_NAME] = 'ReservationMergeJob';
     ```
+
+> [!NOTE]
+> **Cron 標準說明**: 
+> 系統採用 Spring Cron 標準，其中 `CRON_DOW` (週) 的 `1` 代表週日 (SUN)，`7` 代表週六 (SAT)。
 
 ### 2.4 系統常用指令
 

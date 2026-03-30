@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-MhhApApplication<mhh-ap>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.mhh.ap.MhhApApplication",
+            "projectName": "mhh-ap",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

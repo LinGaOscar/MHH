@@ -1,2 +1,4 @@
+com\mhh\ap\config\SecurityConfig.class
 com\mhh\ap\MhhApApplication.class
 com\mhh\ap\controller\RouterController.class
+com\mhh\ap\config\PasswordEncoderConfig.class

@@ -1,2 +1,11 @@
-com\mhh\batch\BatchPlaceholderService.class
+com\mhh\batch\job\HrSyncJob.class
+com\mhh\batch\config\SchedulingConfig.class
+com\mhh\batch\service\DynamicJobService.class
 com\mhh\batch\MhhBatchApplication.class
+com\mhh\batch\job\LogCleanupJob.class
+com\mhh\batch\service\JobSyncScheduler.class
+com\mhh\batch\job\PdfImportJob.class
+com\mhh\batch\repository\JobConfRepository.class
+com\mhh\batch\job\SwallowSyncJob.class
+com\mhh\batch\job\MhhJob.class
+com\mhh\batch\job\ReservationMergeJob.class

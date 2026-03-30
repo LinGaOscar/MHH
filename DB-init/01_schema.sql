@@ -131,7 +131,12 @@ CREATE TABLE [USER_LOGS] (
 CREATE TABLE [JOBS_CONF] (
     [JOB_NAME] NVARCHAR(100) PRIMARY KEY,
     [DESCRIPTION] NVARCHAR(200), -- 任務功能說明
-    [CRON_EXPRESSION] NVARCHAR(50), -- 標準 Quartz/Cron 格式
+    [CRON_SEC] NVARCHAR(10) DEFAULT '0', -- 秒 (0-59)
+    [CRON_MIN] NVARCHAR(10) DEFAULT '0', -- 分 (0-59)
+    [CRON_HOUR] NVARCHAR(10) DEFAULT '0', -- 時 (0-23)
+    [CRON_DOM] NVARCHAR(10) DEFAULT '*', -- 日 (1-31, *, ?, L, W)
+    [CRON_MONTH] NVARCHAR(10) DEFAULT '*', -- 月 (1-12, JAN-DEC, *)
+    [CRON_DOW] NVARCHAR(10) DEFAULT '?', -- 週 (1-7, SUN-SAT, ?, *, L, #)
     [IS_ENABLED] BIT DEFAULT 1, -- 開關狀態 (1: 啟用, 0: 停用)
     [LAST_RUN] DATETIME,
     [PARAMS] NVARCHAR(MAX) -- 擴充參數 (JSON 格式，由 IT 自行維護)

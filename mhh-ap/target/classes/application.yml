@@ -27,6 +27,3 @@ server:
 mhh:
   auth:
     dev-mode: true # 開發模式開關
-  jobs:
-    cron:
-      reservation-merge: "0 0/5 * * * ?"
