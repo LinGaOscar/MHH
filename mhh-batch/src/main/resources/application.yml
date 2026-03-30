@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: mhh-batch
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=MHH_DB;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: YourPassword123
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: always
+
+mhh:
+  jobs:
+    cron:
+      swallow-sync: "0 0 1 * * ?"
+      hr-sync: "0 0 2 * * ?"
+      pdf-import: "0 0 23 * * ?"
+      reservation-merge: "0 0/5 * * * ?"
+      log-cleanup: "0 0 3 * * ?"

@@ -17,12 +17,12 @@
     - `HR_UNIT`: 組織單位架構同步表。
 *   **電文業務類 (Message Business - MSG_ 開頭)**:
     - `MSG_HISTORY`: SWIFT 電文歷史主表。
-    - `MSG_DOWNLOAD`: 預約下載詳情與合併狀態表。
+    - `MSG_DOWNLOAD`: 預約下載詳情與合併狀態表 (含 `EXPIRY_DATE`, `FILE_SIZE`)。單筆下載免放行，多筆需預約。
     - `MSG_APPROVAL`: 工作流審核任務表。
     - `MSG_SWAL_SYNC`: SWALLOW 原始資料同步至本系統之暫存表。
 *   **系統監控類 (System & Monitoring)**:
-    - `SYS_LOGS`: 系統運行錯誤、AOP 例外日誌。
-    - `USER_LOGS`: 使用者行為稽核日誌 (查詢、下載、申請、審核)。
+    - `SYS_LOGS`: 系統運行錯誤、AOP 例外日誌 (保留一年)。
+    - `USER_LOGS`: 使用者行為稽核日誌 (查詢、下載、申請、審核，保留一年)。
     - `JOBS_CONF`: 背景任務配置 (Cron, 參數, 開關)。
     - `JOBS_LOGS`: 所有排程 Job 執行歷史 (含 Start/End Time, Status, Stack Trace)。
 
@@ -42,3 +42,6 @@
 - [ ] **Step 4: JPA Repository 實作**
     - 完成 Entity 與資料庫的 Mapping。
     - 配置讀取外部來源的 Sync 表。
+- [ ] **Step 5: 資料清理策略**
+    - `MSG_DOWNLOAD` 已合併之實體檔案保留 6 個月。
+    - `SYS_LOGS` 與 `USER_LOGS` 保留 1 年。

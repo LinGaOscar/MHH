@@ -18,7 +18,8 @@
 *   `SwallowSyncJob`: 從外部 FTP 擷取資料，並與 `MSG_SWAL_SYNC` 暫存表對應。
 *   `HrSyncJob`: 同步員工在職狀態，更新 `HR_USER` 與 `HR_UNIT`。
 *   `PdfImportJob`: 掃描 FTP，將原始 PDF 匯入系統並更新 `MSG_HISTORY`。
-*   `ReservationMergeJob`: 針對已放行的下載預約，進行實體 PDF 檔案合併與準備，並將合併後的檔案路徑更新至預約單。
+*   `ReservationMergeJob`: 針對已放行的下載預約，進行實體 PDF 檔案合併與準備，並更新狀態與 `EXPIRY_DATE` (6 個月)。同時包含「過期檔案清理」子任務。
+*   `LogCleanupJob`: 每日執行，清理超過一年之 `SYS_LOGS` 與 `USER_LOGS`。
 *   **日誌記錄**: 每個 Job 執行時均須記錄詳細歷程至 `JOBS_LOGS` 表。
 
 ### 2.3 排程與重試機制
@@ -27,6 +28,7 @@
     - `HrSyncJob`: 每日 02:00。
     - `PdfImportJob`: 每日 23:00。
     - `ReservationMergeJob`: 每 5 分鐘執行一次 (近即時合併)。
+    - `LogCleanupJob`: 每日凌晨 03:00。
 *   **錯誤重試**: 使用 Spring Retry 實作 FTP 連線重試與資料庫存取失敗重試。
 
 ## 三、 建置步驟 (Building Steps)
@@ -38,7 +40,8 @@
     - 實作 `HrSyncJob`。
 - [ ] **Step 3: PDF 處理 Jobs**
     - 實作 `PdfImportJob` (掃描與多執行緒匯入)。
-    - 實作 `ReservationMergeJob` (呼叫 `IPdfEngineService` 合併多筆 PDF)。
+    - 實作 `ReservationMergeJob` (呼叫 `IPdfEngineService` 合併多筆 PDF 並處理過期清理)。
+    - 實作 `LogCleanupJob` (DB 紀錄刪除)。
 - [ ] **Step 4: 排程管理與測試**
     - 使用 `@Scheduled` 管理各任務啟動時間。
     - 確保執行結果記錄到 `JOBS_LOGS`。

@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mhh-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourPassword123
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./db-init-scripts:/docker-entrypoint-initdb.d # MSSQL doesn't support this by default, using custom setup below
+      - mssql-data:/var/opt/mssql
+    networks:
+      - mhh-network
+
+  # Helper service to initialize SQL Server after it's ready
+  db-init:
+    image: mcr.microsoft.com/mssql-tools
+    container_name: mhh-db-init
+    depends_on:
+      - sqlserver
+    volumes:
+      - .:/scripts
+    command: >
+      /bin/bash -c "
+      echo 'Waiting for SQL Server to start...';
+      sleep 30s;
+      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P YourPassword123 -i /scripts/01_schema.sql;
+      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P YourPassword123 -i /scripts/02_test_data.sql;
+      echo 'Database initialization completed.'
+      "
+    networks:
+      - mhh-network
+
+networks:
+  mhh-network:
+    driver: bridge
+
+volumes:
+  mssql-data:

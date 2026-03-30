@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+<body>
+    <div layout:fragment="content">
+        <h2>Message Search</h2>
+        <form class="row g-3 mt-2">
+            <div class="col-md-4">
+                <label for="senderBic" class="form-label">Sender BIC</label>
+                <input type="text" class="form-control" id="senderBic">
+            </div>
+            <div class="col-md-4">
+                <label for="receiverBic" class="form-label">Receiver BIC</label>
+                <input type="text" class="form-control" id="receiverBic">
+            </div>
+            <div class="col-md-4">
+                <label for="dateRange" class="form-label">Date Range</label>
+                <input type="date" class="form-control" id="dateRange">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
