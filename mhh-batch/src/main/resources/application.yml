@@ -19,4 +19,17 @@ spring:
 mhh:
   jobs:
     refresh-rate: 20m # 每 20 分鐘同步一次 JOBS_CONF
-    # 實際 Job 之 Cron 與啟用狀態一律從資料庫 JOBS_CONF 讀取
+  
+  # SWAL (Oracle) 為外部資料庫
+  swal:
+    datasource:
+      url: jdbc:oracle:thin:@//localhost:1521/XEPDB1
+      username: SWAL_USER
+      password: SWAL_PASSWORD
+      driver-class-name: oracle.jdbc.OracleDriver
+  
+  # PDF 解析路徑
+  paths:
+    mx: d:/MHH_FILES/MX
+    mt: d:/MHH_FILES/MT
+    archive: d:/MHH_FILES/ARCHIVE

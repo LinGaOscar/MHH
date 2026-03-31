@@ -1,0 +1,72 @@
+# Maven
+# target/  <-- 飼主大人：已移除排除，現在會同步 target 目錄
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+# Avoid ignoring Maven wrapper jar file
+!.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+out/
+
+# Visual Studio Code
+.vscode/
+
+# Eclipse
+.settings/
+.classpath
+.project
+.factorypath
+
+# OS-specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Compiled class files
+*.class
+
+# Package Files (根據飼主大人要求，移除排除，現在會同步套件)
+# *.jar
+# *.war
+# *.ear
+# *.zip
+# *.tar.gz
+# *.rar
+
+# Virtual environments
+venv/
+.env
+.venv
+env.bak
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Temporary files
+*.swp
+*.bak
+*.tmp
+*~
+
+# Project specific
+compile.log
+compile_aop.log
+*.class

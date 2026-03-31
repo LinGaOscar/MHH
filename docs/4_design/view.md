@@ -1,0 +1,79 @@
+# 前端視圖設計規格 (View / Frontend Design)
+
+← [返回設計文件導覽](README.md)
+
+---
+
+## 1. 技術架構
+
+| 項目 | 規格 |
+|:--|:--|
+| 模板引擎 | Thymeleaf（Server-side 渲染 Layout 與 HTML 初始分發） |
+| 前端框架 | Vue.js 3（Composition API / Options API） |
+| UI 樣式 | Bootstrap 5 + Vanilla CSS |
+| HTTP 客戶端 | Axios（整合 CSRF Token 與身分攔截） |
+| 靜態資源路徑 | `src/main/resources/static/` |
+
+> **離線優先**：所有前端資源（Vue.js、Bootstrap）皆使用**離線版本**，不依賴 CDN。
+
+---
+
+## 2. 頁面佈局架構
+
+### 2.1 Thymeleaf Layout 設計
+
+使用 Thymeleaf `layout:decorate` 功能實作共用版型：
+
+```
+layout.html（共用版型）
+├── fragments/header.html     ← AppHeader（國別/語系/使用者資訊）
+├── fragments/sidebar.html    ← Sidebar 導覽列
+└── fragments/footer.html     ← Footer
+```
+
+每個頁面透過 `layout:decorate="~{layout}"` 套用共用版型，再填入頁面本體內容。
+
+### 2.2 路由設計
+
+由 `RouterController`（`@Controller`）負責將請求導向對應的 Thymeleaf 頁面：
+
+| URL | 對應頁面 | 說明 |
+|:--|:--|:--|
+| `/` | `index.html` | 首頁（重導至 Dashboard） |
+| `/login` | `login.html` | SSO 登入頁 |
+| `/dashboard` | `dashboard.html` | 儀表板 |
+| `/query` | `query.html` | 電文查詢 |
+| `/approval` | `approval.html` | 審核清單 |
+| `/settings/params` | `param-settings.html` | 參數設定 |
+
+---
+
+## 3. 核心視圖與串接 API
+
+每個視圖載入後會自動初始化 Vue 實例，再透過 Axios 非同步呼叫後端 API。
+
+| 視圖 | 串接 Controller | 主要功能 |
+|:--|:--|:--|
+| `DashboardView` | `DashboardController` | 顯示「待辦審核清單」與「預約下載進度」 |
+| `MessageSearchView` | `MsgQueryController`（預覽）、`MsgDownloadController`（預約提交） | 電文查詢分頁、PDF 預覽、多筆預約下載 |
+| `ApprovalListView` | `IApprovalService`（後端統一邏輯） | 分行審核 / 參數審核的統一放行介面 |
+| `ParamSettingsView` | `ParamController` | 角色功能清單檢視、MHH 內部權限提升申請 |
+
+---
+
+## 4. 可複用 UI 組件
+
+| 組件 | 說明 |
+|:--|:--|
+| `PdfPreviewModal` | 調用 `MsgQueryController` 提供的異步 PDF 數據流，以 Modal 展示 |
+| `DownloadReservationModal` | 多筆預約下載表單（提交後呼叫 `MsgDownloadController`） |
+| `CountrySwitcher` | 頂部國別切換組件（切換時重置登入狀態並變更語系） |
+
+---
+
+## 5. 建置進度
+
+- [ ] **Step 1**：Thymeleaf Layout 建置（`layout.html`、`fragments/header.html`、`sidebar.html`）
+- [ ] **Step 2**：Vue 3 環境初始化（匯入離線 Vue.js 與 Bootstrap 5，定義 Global Component）
+- [ ] **Step 3**：Dashboard 與電文查詢頁開發（統計邏輯 + 分頁列表 + PDF 預覽互動）
+- [ ] **Step 4**：權限檢視頁開發（`ParamSettingsView`，確保國別隔離）
