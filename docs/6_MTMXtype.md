@@ -1,0 +1,737 @@
+# MHH 電文種類與重要欄位對照表
+
+本文件列出 MHH 系統需處理的 MT / MX 電文種類，及各類型在解析時需擷取的重要欄位（Tag）。
+
+> **說明**
+> - MT 電文欄位格式：`:TAG:` （SWIFT Block 4 標籤）
+> - MX 電文欄位格式：`XML Element`（ISO 20022 XML 路徑）
+> - `messageId` 欄對應 `MSG_HISTORY.MESSAGE_ID`
+> - `★` 代表必填欄位，`☆` 代表選填但重要欄位
+
+---
+
+## MT 電文
+
+### MT102 — Multiple Customer Credit Transfer（批量客戶匯款）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Transaction Reference Number |
+| ★ sender | `:52A/D:` | Ordering Institution |
+| ★ receiver | `:57A/D:` | Account with Institution |
+| ★ amount | `:32A:` | Value Date / Currency / Amount（格式：YYMMDDCCCAMOUNT） |
+| ★ currency | `:32A:` | 從 :32A: 截取 Currency Code（3碼） |
+| ☆ reference | `:21:` | Related Reference |
+| ☆ valueDate | `:32A:` | 從 :32A: 截取 Value Date（YYMMDD） |
+
+---
+
+### MT019 — Acknowledgement（確認回執）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Transaction Reference Number |
+| ★ reference | `:12:` | Sub-message Type |
+| ☆ rejectReason | `:75:` | Queries（拒絕原因） |
+
+---
+
+### MT103 — Single Customer Credit Transfer（單筆客戶匯款）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ sender | `:50A/K:` | Ordering Customer（匯款人） |
+| ★ receiver | `:59/59A:` | Beneficiary Customer（受益人） |
+| ★ amount | `:32A:` | Value Date / Currency / Amount |
+| ★ currency | `:32A:` | Currency Code |
+| ★ reference | `:70:` | Remittance Information（匯款說明） |
+| ☆ bankOpCode | `:23B:` | Bank Operation Code（例：CRED） |
+| ☆ orderingInst | `:52A/D:` | Ordering Institution |
+| ☆ senderCorr | `:53A/B/D:` | Sender's Correspondent |
+| ☆ receiverCorr | `:54A/B/D:` | Receiver's Correspondent |
+| ☆ intermed | `:56A/D:` | Intermediary Institution |
+| ☆ acctWithInst | `:57A/D:` | Account with Institution |
+| ☆ charges | `:71A:` | Details of Charges（OUR / SHA / BEN） |
+| ☆ senderInfo | `:72:` | Sender to Receiver Information |
+
+---
+
+### MT110 — Advice of Cheque(s)（支票通知）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ amount | `:32a:` | Currency / Amount |
+| ★ sender | `:50A/K:` | Drawer（出票人） |
+| ★ receiver | `:59:` | Payee（受款人） |
+| ☆ issueDate | `:30:` | Date of Issue |
+
+---
+
+### MT111 — Request for Stop Payment of a Cheque（止付請求）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ amount | `:32a:` | Currency / Amount |
+| ★ sender | `:50A/K:` | Drawer |
+| ★ receiver | `:59:` | Payee |
+| ☆ issueDate | `:30:` | Date of Issue |
+
+---
+
+### MT112 — Status of a Request for Stop Payment（止付狀態）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Related Reference |
+| ☆ issueDate | `:30:` | Date of Issue |
+
+---
+
+### MT191 — Request for Payment of Charges（費用請求）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Related Reference |
+| ★ amount | `:32a:` | Currency / Amount |
+
+---
+
+### MT192 — Request for Cancellation（取消請求）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Related Reference |
+| ☆ originalMt | `:11S:` | MT and Date of Original Message |
+| ☆ narrative | `:79:` | Narrative（取消原因） |
+
+---
+
+### MT196 — Answers（答覆）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Related Reference |
+| ★ content | `:76:` | Answers |
+| ☆ narrative | `:79:` | Narrative |
+
+---
+
+### MT199 — Free Format Message（自由格式）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ content | `:79:` | Narrative（全文） |
+
+---
+
+### MT202 — General Financial Institution Transfer（金融機構匯款）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Related Reference |
+| ★ amount | `:32A:` | Value Date / Currency / Amount |
+| ★ currency | `:32A:` | Currency Code |
+| ★ sender | `:52A/D:` | Ordering Institution |
+| ★ receiver | `:58A/D:` | Beneficiary Institution |
+| ☆ senderCorr | `:53A/B/D:` | Sender's Correspondent |
+| ☆ receiverCorr | `:54A/B/D:` | Receiver's Correspondent |
+| ☆ intermed | `:56A/D:` | Intermediary Institution |
+| ☆ acctWithInst | `:57A/D:` | Account with Institution |
+
+---
+
+### MT209 — Miscellaneous Funding Messages（雜項資金訊息）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ amount | `:32A:` | Value Date / Currency / Amount |
+| ★ sender | `:52A/D:` | Ordering Institution |
+| ★ receiver | `:58A/D:` | Beneficiary Institution |
+
+---
+
+### MT291 — Request for Payment of Charges（費用請求）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Related Reference |
+| ★ amount | `:32a:` | Currency / Amount |
+
+---
+
+### MT299 — Free Format Message（自由格式）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ content | `:79:` | Narrative |
+
+---
+
+### MT300 — Foreign Exchange Confirmation（外匯確認）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Related Reference |
+| ★ sender | `:82A/D/J:` | Party A |
+| ★ receiver | `:87A/D/J:` | Party B |
+| ★ amount | `:32B:` | Currency / Amount Bought |
+| ★ currency | `:32B:` | Currency Code |
+| ☆ soldAmt | `:33B:` | Currency / Amount Sold |
+| ☆ tradeDate | `:30T:` | Trade Date |
+| ☆ valueDate | `:30V:` | Value Date |
+| ☆ opType | `:22A:` | Type of Operation（NEW/AMND/CANC） |
+
+---
+
+### MT305 — Foreign Currency Option Confirmation（外匯選擇權確認）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Related Reference |
+| ★ sender | `:82A/D/J:` | Party A |
+| ★ receiver | `:87A/D/J:` | Party B |
+| ★ amount | `:32B:` | Currency / Amount |
+| ★ currency | `:32B:` | Currency Code |
+| ☆ tradeDate | `:30T:` | Trade Date |
+| ☆ expiryDate | `:30X:` | Expiry Date |
+
+---
+
+### MT320 — Fixed Loan/Deposit Confirmation（定存/貸款確認）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Related Reference |
+| ★ sender | `:82A/D/J:` | Party A |
+| ★ receiver | `:87A/D/J:` | Party B |
+| ★ amount | `:32B:` | Principal Amount |
+| ★ currency | `:32B:` | Currency Code |
+| ☆ tradeDate | `:30T:` | Trade Date |
+| ☆ valueDate | `:30V:` | Value Date（起息日） |
+| ☆ maturityDate | `:30P:` | Maturity Date（到期日） |
+
+---
+
+### MT362 — Interest Rate Reset / Advice Fixed Rate（利率重設）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Related Reference |
+| ★ amount | `:32B:` | Notional Amount |
+| ★ currency | `:32B:` | Currency Code |
+
+---
+
+### MT396 / MT399 — Answers / Free Format（答覆/自由格式）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Related Reference |
+| ★ content | `:79:` | Narrative |
+
+---
+
+### MT410 — Acknowledgement（收據確認）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Related Reference |
+| ★ amount | `:32a:` | Currency / Amount |
+| ☆ sender | `:52a:` | Drawee Bank |
+
+---
+
+### MT535 — Statement of Holdings（持有部位對帳）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:13a:` | Statement Number |
+| ☆ pageNum | `:28E:` | Page Number / Continuation Indicator |
+| ☆ activityFlag | `:17B:` | Activity Flag（Y/N） |
+| ☆ instrument | `:35B:` | Identification of Financial Instrument（ISIN） |
+
+---
+
+### MT545 — Receive Against Payment Confirmation（收券確認）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20C:` | Reference（SEME） |
+| ★ amount | `:19A:` | Settlement Amount |
+| ★ currency | `:19A:` | Currency Code |
+| ☆ instrument | `:35B:` | Financial Instrument（ISIN） |
+| ☆ quantity | `:36B:` | Quantity of Financial Instrument |
+| ☆ account | `:97A/B:` | Safekeeping Account |
+
+---
+
+### MT548 — Settlement Status and Processing Advice（結算狀態）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20C:` | Reference（SEME） |
+| ☆ status | `:25D:` | Processing Status（PEND/PACK/PREA/SETT） |
+| ☆ reason | `:24B:` | Reason Code |
+
+---
+
+### MT569 — Triparty Collateral and Exposure Statement（三方擔保對帳）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20C:` | Reference |
+| ☆ account | `:97A:` | Safekeeping Account |
+| ☆ totalExposure | `:19A:` | Total Exposure Amount |
+
+---
+
+### MT700 — Issue of a Documentary Credit（信用狀開狀）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Documentary Credit Number |
+| ★ sender | `:50:` | Applicant（申請人） |
+| ★ receiver | `:59:` | Beneficiary（受益人） |
+| ★ amount | `:32B:` | Currency / Amount |
+| ★ currency | `:32B:` | Currency Code |
+| ★ reference | `:45A/B:` | Description of Goods（貨物說明） |
+| ☆ issueDate | `:31C:` | Date of Issue |
+| ☆ expiryDate | `:31D:` | Date and Place of Expiry |
+| ☆ availableWith | `:41A/D:` | Available With / By |
+| ☆ partialShip | `:43P:` | Partial Shipments（ALLOWED/NOT ALLOWED） |
+| ☆ transhipment | `:43T:` | Transhipment |
+| ☆ docsRequired | `:46A/B:` | Documents Required |
+
+---
+
+### MT701 — Issue of a Documentary Credit（信用狀開狀續頁）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Documentary Credit Number |
+| ★ content | `:45A/46A/47A:` | 貨物說明 / 要求文件 / 附加條件（續） |
+
+---
+
+### MT707 — Amendment to a Documentary Credit（信用狀修改）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Documentary Credit Number |
+| ★ receiver | `:59:` | Beneficiary |
+| ☆ amendedAmt | `:34B:` | New Documentary Credit Amount |
+| ☆ amendedExpiry | `:31D:` | New Expiry Date and Place |
+
+---
+
+### MT710 — Advice of a Third Bank's Documentary Credit（第三行通知信用狀）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Documentary Credit Number |
+| ★ amount | `:32B:` | Currency / Amount |
+| ★ receiver | `:59:` | Beneficiary |
+
+---
+
+### MT711 — Advice of a Third Bank's Documentary Credit（續頁）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ content | `:45A/46A/47A:` | 續頁內容 |
+
+---
+
+### MT720 — Transfer of a Documentary Credit（信用狀轉讓）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Documentary Credit Number |
+| ★ amount | `:32B:` | Currency / Amount |
+| ★ sender | `:50:` | Applicant |
+| ★ receiver | `:59:` | Second Beneficiary（第二受益人） |
+
+---
+
+### MT734 — Advice of Refusal（拒付通知）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Documentary Credit Number |
+| ★ content | `:77J:` | Discrepancies（不符點） |
+| ☆ charges | `:73:` | Details of Charges |
+
+---
+
+### MT754 — Advice of Payment / Acceptance / Negotiation（付款/承兌/議付通知）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Documentary Credit Number |
+| ★ amount | `:32a:` | Paid / Accepted / Negotiated Amount |
+| ★ currency | `:32a:` | Currency Code |
+| ☆ charges | `:73:` | Details of Charges |
+
+---
+
+### MT760 — Guarantee / Standby Letter of Credit（保函/備用信用狀）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ sender | `:52A/D:` | Issuing Bank |
+| ★ receiver | `:59:` | Beneficiary |
+| ★ amount | `:32B:` | Currency / Amount |
+| ★ currency | `:32B:` | Currency Code |
+| ★ content | `:77C:` | Details of Guarantee（保函條款） |
+| ☆ function | `:22A:` | Function of Message（ISSU/AMND/CANC） |
+| ☆ expiryDate | `:31D:` | Date and Place of Expiry |
+
+---
+
+### MT767 — Guarantee / Standby Letter of Credit Amendment（保函修改）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Guarantee Reference |
+| ★ amount | `:32B:` | New Currency / Amount |
+| ★ receiver | `:59:` | Beneficiary |
+
+---
+
+### MT799 — Free Format Message（自由格式）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ content | `:79:` | Narrative |
+
+---
+
+### MT900 — Confirmation of Debit（借記確認）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Related Reference |
+| ★ amount | `:32A:` | Value Date / Currency / Amount |
+| ★ currency | `:32A:` | Currency Code |
+| ☆ account | `:25:` | Account Identification |
+
+---
+
+### MT910 — Confirmation of Credit（貸記確認）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:21:` | Related Reference |
+| ★ amount | `:32A:` | Value Date / Currency / Amount |
+| ★ currency | `:32A:` | Currency Code |
+| ☆ account | `:25:` | Account Identification |
+| ☆ sender | `:50A/K:` | Ordering Customer |
+| ☆ orderingInst | `:52A/D:` | Ordering Institution |
+
+---
+
+### MT940 — Customer Statement Message（客戶對帳單）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:25:` | Account Identification（帳號） |
+| ★ content | `:61:` | Statement Line（逐筆交易） |
+| ☆ stmtNo | `:28C:` | Statement Number / Sequence Number |
+| ☆ openingBal | `:60F/M:` | Opening Balance |
+| ☆ closingBal | `:62F/M:` | Closing Balance |
+| ☆ info | `:86:` | Information to Account Owner |
+
+---
+
+### MT950 — Statement Message（銀行對帳單）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ reference | `:25:` | Account Identification |
+| ★ content | `:61:` | Statement Line |
+| ☆ stmtNo | `:28C:` | Statement Number |
+| ☆ openingBal | `:60F/M:` | Opening Balance |
+| ☆ closingBal | `:62F/M:` | Closing Balance |
+
+---
+
+### MT999 — Free Format Message（自由格式）
+
+| 欄位 | Tag | 說明 |
+|------|-----|------|
+| ★ messageId | `:20:` | Sender's Reference |
+| ★ content | `:79:` | Narrative |
+
+---
+
+## MX 電文（ISO 20022）
+
+> MX 電文為 XML 格式，欄位路徑以 XPath 簡化表示。
+> 根元素依電文類型不同，通用結構為 `Document/[MessageRoot]`。
+
+---
+
+### admi.004.001.02 — System Event Acknowledgement（系統事件確認）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `GrpHdr/MsgId` | Message ID |
+| ★ content | `EvtInf/EvtCd` | Event Code |
+| ☆ eventParam | `EvtInf/EvtParam` | Event Parameter |
+| ☆ creationDate | `GrpHdr/CreDtTm` | Creation Date Time |
+
+---
+
+### admi.024.001.01 — Resend Request（重送請求）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `GrpHdr/MsgId` | Message ID |
+| ★ reference | `BizInqDef/InqTp/MsgNmId` | Message Name Identifier |
+| ☆ beginSeqNb | `BizInqDef/BizQryRef/BizInqRef` | Begin Sequence Number |
+| ☆ endSeqNb | `BizInqDef/BizQryRef/BizInqRef` | End Sequence Number |
+
+---
+
+### camt.029.001.09 — Resolution of Investigation（調查結果）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `Assgnmt/Id` | Assignment ID |
+| ★ reference | `RslvdCase/Id` | Resolved Case ID |
+| ★ content | `Sts/Conf` | Confirmation Status（CNCL/CWFW/UWFW/ARRO） |
+| ☆ creationDate | `Assgnmt/CreDtTm` | Creation Date Time |
+| ☆ cancelDetails | `CxlDtls/TxInfAndSts/OrgnlEndToEndId` | Original End-to-End ID |
+
+---
+
+### camt.053.001.08 — Bank to Customer Statement（銀行對帳單）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `GrpHdr/MsgId` | Message ID |
+| ★ reference | `Stmt/Id` | Statement ID |
+| ★ receiver | `Stmt/Acct/Id/IBAN` 或 `Stmt/Acct/Id/Othr/Id` | Account Number |
+| ★ content | `Stmt/Ntry` | Entry（逐筆交易，多筆） |
+| ☆ creationDate | `GrpHdr/CreDtTm` | Creation Date Time |
+| ☆ openingBal | `Stmt/Bal[Tp/CdOrPrtry/Cd='OPBD']/Amt` | Opening Balance |
+| ☆ closingBal | `Stmt/Bal[Tp/CdOrPrtry/Cd='CLBD']/Amt` | Closing Balance |
+| ☆ currency | `Stmt/Bal/Amt[@Ccy]` | Currency Code |
+
+---
+
+### camt.054.001.08 — Bank to Customer Debit Credit Notification（借貸通知）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `GrpHdr/MsgId` | Message ID |
+| ★ reference | `Ntfctn/Id` | Notification ID |
+| ★ receiver | `Ntfctn/Acct/Id/IBAN` 或 `Ntfctn/Acct/Id/Othr/Id` | Account Number |
+| ★ amount | `Ntfctn/Ntry/Amt` | Entry Amount |
+| ★ currency | `Ntfctn/Ntry/Amt[@Ccy]` | Currency |
+| ☆ valueDate | `Ntfctn/Ntry/ValDt/Dt` | Value Date |
+| ☆ creditDebit | `Ntfctn/Ntry/CdtDbtInd` | CRDT / DBIT |
+
+---
+
+### camt.055.001.08 — Customer Payment Cancellation Request（客戶取消請求）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `Assgnmt/Id` | Assignment ID |
+| ★ reference | `Undrlyg/OrgnlGrpInfAndCxl/OrgnlMsgId` | Original Message ID |
+| ★ content | `Undrlyg/TxInf/CxlRsnInf/Rsn/Cd` | Cancellation Reason Code |
+| ☆ origEndToEndId | `Undrlyg/TxInf/OrgnlEndToEndId` | Original End-to-End ID |
+
+---
+
+### camt.056.001.08 — FI to FI Payment Cancellation Request（機構間取消請求）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `Assgnmt/Id` | Assignment ID |
+| ★ reference | `Undrlyg/TxInf/OrgnlInstrId` | Original Instruction ID |
+| ★ content | `Undrlyg/TxInf/CxlRsnInf/Rsn/Cd` | Cancellation Reason Code |
+| ☆ amount | `Undrlyg/TxInf/OrgnlIntrBkSttlmAmt` | Original Interbank Settlement Amount |
+| ☆ currency | `Undrlyg/TxInf/OrgnlIntrBkSttlmAmt[@Ccy]` | Currency |
+
+---
+
+### camt.106.001.02 — Charges Claim（費用請求）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `GrpHdr/MsgId` | Message ID |
+| ★ reference | `Chrgs/Id` | Charges ID |
+| ★ amount | `Chrgs/TtlChrgsAndTaxAmt` | Total Charges Amount |
+| ★ currency | `Chrgs/TtlChrgsAndTaxAmt[@Ccy]` | Currency |
+| ☆ sender | `GrpHdr/InitgPty/Nm` | Initiating Party |
+
+---
+
+### camt.107.001.01 — Cheque Presentment Notification（支票提示通知）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `GrpHdr/MsgId` | Message ID |
+| ★ reference | `ChqPresntmntNtfctn/ChqNb` | Cheque Number |
+| ★ amount | `ChqPresntmntNtfctn/Amt` | Amount |
+| ★ currency | `ChqPresntmntNtfctn/Amt[@Ccy]` | Currency |
+
+---
+
+### camt.108.001.01 — Cheque Cancellation or Stop Request（支票止付請求）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `GrpHdr/MsgId` | Message ID |
+| ★ reference | `ChqCxlOrStopReq/ChqNb` | Cheque Number |
+| ★ amount | `ChqCxlOrStopReq/Amt` | Amount |
+| ★ sender | `ChqCxlOrStopReq/DrwrAgt/FinInstnId/BICFI` | Drawee Agent BIC |
+
+---
+
+### camt.109.001.01 — Cheque Cancellation or Stop Report（止付結果）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `GrpHdr/MsgId` | Message ID |
+| ★ reference | `ChqCxlOrStopRpt/OrgnlChqNb` | Original Cheque Number |
+| ★ content | `ChqCxlOrStopRpt/Sts` | Status（ACCP/RJCT） |
+
+---
+
+### pacs.002.001.10 — FI to FI Payment Status Report（支付狀態回報）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `GrpHdr/MsgId` | Message ID |
+| ★ reference | `TxInfAndSts/OrgnlInstrId` | Original Instruction ID |
+| ★ content | `TxInfAndSts/TxSts` | Transaction Status（ACSP/RJCT/PDNG） |
+| ☆ origEndToEndId | `TxInfAndSts/OrgnlEndToEndId` | Original End-to-End ID |
+| ☆ rejectReason | `TxInfAndSts/StsRsnInf/Rsn/Cd` | Reject Reason Code |
+| ☆ creationDate | `GrpHdr/CreDtTm` | Creation Date Time |
+
+---
+
+### pacs.004.001.09 — Payment Return（退款）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `GrpHdr/MsgId` | Message ID |
+| ★ sender | `TxInf/InstgAgt/FinInstnId/BICFI` | Instructing Agent BIC |
+| ★ receiver | `TxInf/InstdAgt/FinInstnId/BICFI` | Instructed Agent BIC |
+| ★ amount | `TxInf/RtrdIntrBkSttlmAmt` | Returned Interbank Settlement Amount |
+| ★ currency | `TxInf/RtrdIntrBkSttlmAmt[@Ccy]` | Currency |
+| ★ reference | `TxInf/OrgnlInstrId` | Original Instruction ID |
+| ★ content | `TxInf/RtrRsnInf/Rsn/Cd` | Return Reason Code |
+| ☆ origEndToEndId | `TxInf/OrgnlEndToEndId` | Original End-to-End ID |
+
+---
+
+### pacs.008.001.08 — FI to FI Customer Credit Transfer（跨行匯款）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `GrpHdr/MsgId` | Message ID |
+| ★ sender | `CdtTrfTxInf/Dbtr/Nm` | Debtor Name（匯款人） |
+| ★ receiver | `CdtTrfTxInf/Cdtr/Nm` | Creditor Name（收款人） |
+| ★ amount | `CdtTrfTxInf/IntrBkSttlmAmt` | Interbank Settlement Amount |
+| ★ currency | `CdtTrfTxInf/IntrBkSttlmAmt[@Ccy]` | Currency |
+| ★ reference | `CdtTrfTxInf/PmtId/EndToEndId` | End-to-End ID |
+| ☆ instrId | `CdtTrfTxInf/PmtId/InstrId` | Instruction ID |
+| ☆ sttlmDt | `CdtTrfTxInf/IntrBkSttlmDt` | Interbank Settlement Date |
+| ☆ chargeBear | `CdtTrfTxInf/ChrgBr` | Charge Bearer（DEBT/CRED/SHAR/SLEV） |
+| ☆ instgAgt | `CdtTrfTxInf/InstgAgt/FinInstnId/BICFI` | Instructing Agent BIC |
+| ☆ instdAgt | `CdtTrfTxInf/InstdAgt/FinInstnId/BICFI` | Instructed Agent BIC |
+| ☆ dbtrAcct | `CdtTrfTxInf/DbtrAcct/Id/IBAN` | Debtor Account |
+| ☆ cdtrAcct | `CdtTrfTxInf/CdtrAcct/Id/IBAN` | Creditor Account |
+| ☆ remitInfo | `CdtTrfTxInf/RmtInf/Ustrd` | Remittance Information（匯款說明） |
+| ☆ creationDate | `GrpHdr/CreDtTm` | Creation Date Time |
+| ☆ nbOfTxs | `GrpHdr/NbOfTxs` | Number of Transactions |
+
+---
+
+### pacs.009.001.08 — Financial Institution Credit Transfer（機構間匯款）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `GrpHdr/MsgId` | Message ID |
+| ★ sender | `CdtTrfTxInf/Dbtr/FinInstnId/BICFI` | Debtor BIC（匯款機構） |
+| ★ receiver | `CdtTrfTxInf/Cdtr/FinInstnId/BICFI` | Creditor BIC（收款機構） |
+| ★ amount | `CdtTrfTxInf/IntrBkSttlmAmt` | Interbank Settlement Amount |
+| ★ currency | `CdtTrfTxInf/IntrBkSttlmAmt[@Ccy]` | Currency |
+| ★ reference | `CdtTrfTxInf/PmtId/EndToEndId` | End-to-End ID |
+| ☆ instrId | `CdtTrfTxInf/PmtId/InstrId` | Instruction ID |
+| ☆ sttlmDt | `CdtTrfTxInf/IntrBkSttlmDt` | Interbank Settlement Date |
+| ☆ instgAgt | `CdtTrfTxInf/InstgAgt/FinInstnId/BICFI` | Instructing Agent BIC |
+| ☆ instdAgt | `CdtTrfTxInf/InstdAgt/FinInstnId/BICFI` | Instructed Agent BIC |
+
+---
+
+### trck.002.001.02 — Payment Status Request（支付狀態查詢）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `GrpHdr/MsgId` | Message ID |
+| ★ reference | `TxQryDef/QryTp/PmtTp/SvcLvl/Cd` | Query Type |
+| ☆ origMsgId | `TxQryDef/SchCrit/PmtTo/Dt` | Search Criteria Date |
+| ☆ endToEndId | `TxQryDef/SchCrit/EndToEndId` | End-to-End ID（查詢條件） |
+
+---
+
+### xsys.002.001.01 / xsys.003.001.01 / xsys.012.001.01 — System Messages（系統訊息）
+
+| 欄位 | XML 元素 | 說明 |
+|------|----------|------|
+| ★ messageId | `GrpHdr/MsgId` | Message ID |
+| ★ content | `SysEvtNtfctn/EvtInf/EvtCd` 或 `SysEvtAck/EvtInf/EvtCd` | Event Code |
+| ☆ creationDate | `GrpHdr/CreDtTm` | Creation Date Time |
+| ☆ eventParam | `SysEvtNtfctn/EvtInf/EvtParam` | Event Parameter |
+
+---
+
+## 欄位對應摘要（對應 MSG_HISTORY 資料表）
+
+| MSG_HISTORY 欄位 | MT 對應來源 | MX 對應來源 |
+|-----------------|------------|------------|
+| `MESSAGE_ID` | `:20:` | `GrpHdr/MsgId` |
+| `MESSAGE_TYPE` | 電文種類識別（如 MT103） | XML namespace 或根元素判斷 |
+| `SENDER` | `:50A/K:` 或 `:52A/D:` | `Dbtr/Nm` 或 `InstgAgt/BICFI` |
+| `RECEIVER` | `:59:` 或 `:57A/D:` | `Cdtr/Nm` 或 `InstdAgt/BICFI` |
+| `AMOUNT` | `:32A/32B:` 數字部分 | `IntrBkSttlmAmt` 或 `Amt` |
+| `CURRENCY` | `:32A/32B:` 貨幣碼 | `[@Ccy]` 屬性 |
+| `REFERENCE` | `:21:` 或 `:70:` | `EndToEndId` 或 `InstrId` |
+| `CONTENT` | 全文（`String text`） | 全 XML 文字 |
+| `PARAMETERS` | 其餘重要欄位（JSON） | 其餘重要欄位（JSON） |

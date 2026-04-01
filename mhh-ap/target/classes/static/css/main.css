@@ -133,9 +133,50 @@ h1, h2, h3, .logo-text {
     transition: all 0.2s;
 }
 
-.submenu-item:hover {
+.submenu-item:hover, .submenu-item.active {
     color: var(--text-main);
     background-color: rgba(255, 255, 255, 0.05);
+}
+
+.submenu-item.active {
+    color: var(--primary-light);
+    font-weight: 500;
+}
+
+/* Query pages */
+.query-input {
+    background-color: var(--bg-dark) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: var(--text-main) !important;
+}
+
+.query-input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.15rem rgba(37, 99, 235, 0.25) !important;
+}
+
+.query-input option {
+    background-color: var(--bg-sidebar);
+}
+
+.query-table thead th {
+    background-color: rgba(30, 41, 59, 0.9);
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+    border-color: rgba(255, 255, 255, 0.08);
+    padding: 0.5rem 0.75rem;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.query-table tbody td {
+    font-size: 0.82rem;
+    border-color: rgba(255, 255, 255, 0.05);
+    padding: 0.4rem 0.75rem;
+    white-space: nowrap;
 }
 
 /* Main Content */

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<body>
+<div layout:fragment="content" th:with="activePage='outgoing', activeGroup='message'">
+
+    <div class="mb-3">
+        <h2 class="fw-bold">出電文查詢</h2>
+    </div>
+
+    <!-- Search Form -->
+    <div class="card-premium mb-3">
+        <form id="outgoingSearchForm">
+            <!-- Row 1: 電文日期 / 電文類別 / 電文種類 / 收電行 -->
+            <div class="row g-2 mb-2 align-items-end">
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">電文日期</label>
+                    <div class="d-flex align-items-center gap-1">
+                        <input type="datetime-local" class="form-control form-control-sm query-input" name="dateFrom">
+                        <span class="text-muted">~</span>
+                        <input type="datetime-local" class="form-control form-control-sm query-input" name="dateTo">
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">電文類別</label>
+                    <select class="form-select form-select-sm query-input" name="msgType" style="min-width:110px">
+                        <option value="">全部</option>
+                        <option value="pacs" selected>pacs</option>
+                        <option value="fin">FIN</option>
+                        <option value="camt">camt</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">電文種類</label>
+                    <select class="form-select form-select-sm query-input" name="msgCategory" style="min-width:100px">
+                        <option value="">全部</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">收電行</label>
+                    <input type="text" class="form-control form-control-sm query-input" name="receiver" style="width:120px">
+                </div>
+            </div>
+
+            <!-- Row 2: 票別 / 金額 / Reference(SWP) -->
+            <div class="row g-2 mb-2 align-items-end">
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">票別</label>
+                    <input type="text" class="form-control form-control-sm query-input" name="ticketType" style="width:80px">
+                </div>
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">金額</label>
+                    <div class="d-flex align-items-center gap-1">
+                        <input type="number" class="form-control form-control-sm query-input" name="amountFrom" value="0" style="width:90px">
+                        <span class="text-muted">~</span>
+                        <input type="number" class="form-control form-control-sm query-input" name="amountTo" placeholder="39,999,999,999,999" style="width:160px">
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">Reference(SWP)</label>
+                    <input type="text" class="form-control form-control-sm query-input" name="reference" style="width:150px">
+                </div>
+            </div>
+
+            <!-- Row 3: TAG 20 / TAG 21 / ISN / 電文單位別 -->
+            <div class="row g-2 mb-2 align-items-end">
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">TAG 20</label>
+                    <input type="text" class="form-control form-control-sm query-input" name="tag20" style="width:120px">
+                </div>
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">TAG 21</label>
+                    <input type="text" class="form-control form-control-sm query-input" name="tag21" style="width:120px">
+                </div>
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">ISN</label>
+                    <div class="d-flex align-items-center gap-1">
+                        <input type="text" class="form-control form-control-sm query-input" name="isnFrom" style="width:80px">
+                        <span class="text-muted">~</span>
+                        <input type="text" class="form-control form-control-sm query-input" name="isnTo" style="width:80px">
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">電文單位別</label>
+                    <input type="text" class="form-control form-control-sm query-input" name="unitCode" value="FAQ" style="width:80px">
+                </div>
+            </div>
+
+            <!-- Row 4: AML狀記 / AML核態 / 主機檢查錯誤結果 / Buttons -->
+            <div class="row g-2 align-items-end">
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">AML狀記</label>
+                    <select class="form-select form-select-sm query-input" name="amlFlag" style="min-width:90px">
+                        <option value="">全部</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">AML核態</label>
+                    <select class="form-select form-select-sm query-input" name="amlStatus" style="min-width:90px">
+                        <option value="">全部</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">主機檢查錯誤結果</label>
+                    <select class="form-select form-select-sm query-input" name="hostCheckResult" style="min-width:130px">
+                        <option value="">全部</option>
+                    </select>
+                </div>
+                <div class="col-auto ms-auto d-flex gap-1">
+                    <button type="button" class="btn btn-primary btn-sm px-3" onclick="doSearch()">
+                        <i class="bi bi-search me-1"></i>查詢
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-3">
+                        <i class="bi bi-printer me-1"></i>列印
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary btn-sm px-3">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>重置
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Table -->
+    <div class="card-premium" style="overflow:hidden">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <small id="resultMsg" class="text-muted">*** 無資料顯示 ***</small>
+            <small id="queryTime" class="text-muted"></small>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover table-sm query-table mb-0">
+                <thead>
+                    <tr>
+                        <th class="text-nowrap">電文日期</th>
+                        <th class="text-nowrap">電文類別</th>
+                        <th class="text-nowrap">ISN</th>
+                        <th class="text-nowrap">TAG 20</th>
+                        <th class="text-nowrap">TAG 21</th>
+                        <th class="text-nowrap">AML核核狀態</th>
+                        <th class="text-nowrap">發電行</th>
+                        <th class="text-nowrap">收電行</th>
+                        <th class="text-nowrap">Value Date</th>
+                        <th class="text-nowrap">幣別</th>
+                        <th class="text-nowrap">金額</th>
+                        <th class="text-nowrap">Reference(SWP)</th>
+                        <th class="text-nowrap">電文單位別</th>
+                        <th class="text-nowrap">SAA積製</th>
+                        <th class="text-nowrap">傳送SAA狀態</th>
+                        <th class="text-nowrap">傳送SAA時間</th>
+                        <th class="text-nowrap">ACK/NAK狀態</th>
+                        <th class="text-nowrap">ACK/NAK時間</th>
+                        <th class="text-nowrap">傳送業務系統狀態</th>
+                        <th class="text-nowrap">傳送業務系統時間</th>
+                        <th class="text-nowrap">主機檢查碼驗證</th>
+                        <th class="text-nowrap">傳送SAA Queue</th>
+                    </tr>
+                </thead>
+                <tbody id="resultBody">
+                    <tr>
+                        <td colspan="22" class="text-center text-muted py-4">請輸入條件後開始查詢</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script th:inline="javascript">
+function doSearch() {
+    const now = new Date().toLocaleString('zh-TW', {hour12: false});
+    document.getElementById('queryTime').textContent = 'Query Time: ' + now;
+    document.getElementById('resultMsg').textContent = '*** 無資料顯示 ***';
+    document.getElementById('resultBody').innerHTML =
+        '<tr><td colspan="22" class="text-center text-muted py-4">查無資料</td></tr>';
+}
+</script>
+</body>
+</html>

@@ -23,4 +23,14 @@ public class RouterController {
     public String query(Model model) {
         return "query"; // Placeholder for query.html
     }
+
+    @GetMapping("/incoming")
+    public String incoming(Model model) {
+        return "incoming";
+    }
+
+    @GetMapping("/outgoing")
+    public String outgoing(Model model) {
+        return "outgoing";
+    }
 }
