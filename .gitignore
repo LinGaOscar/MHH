@@ -1,5 +1,5 @@
 # Maven
-# target/  <-- 飼主大人：已移除排除，現在會同步 target 目錄
+target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
