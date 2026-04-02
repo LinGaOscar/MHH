@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ls -la /d/GitHub/MHH/mhh-*/)"
+      "Bash(ls -la /d/GitHub/MHH/mhh-*/)",
+      "Bash(xargs ls:*)"
     ]
   }
 }

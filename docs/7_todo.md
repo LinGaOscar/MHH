@@ -1,6 +1,6 @@
 # MHH 開發待辦事項
 
-> 最後更新：2026-04-01
+> 最後更新：2026-04-02
 > 本文件追蹤尚未完成或等待外部資訊的開發項目。
 
 ---
@@ -41,7 +41,7 @@
 
 | # | 項目 | 說明 |
 |---|------|------|
-| P-1 | **補上 save 前的 dedup 檢查** | 目前 PDF 沒有在 `repository.save()` 前先呼叫 `findByMessageId()` 確認，重複 import 會因 `MESSAGE_ID` unique key 拋例外；應改為先查詢，已存在則跳過並 archive |
+| P-1 | **補上 save 前的 dedup 檢查** | 目前 PDF 沒有在 save 前先呼叫 `findByMessageId()` 確認（`MsgIncomingRepository` / `MsgOutgoingRepository` 均已提供此方法），重複 import 會因 `MESSAGE_ID` unique key 拋例外；應改為先查詢，已存在則跳過並 archive |
 
 ---
 

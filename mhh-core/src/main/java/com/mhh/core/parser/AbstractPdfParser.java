@@ -1,6 +1,7 @@
 package com.mhh.core.parser;
 
-import com.mhh.common.entity.MessageHistory;
+import com.mhh.common.entity.SwiftMessageBase;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,10 +23,11 @@ public abstract class AbstractPdfParser implements PdfParser {
     }
 
     /**
-     * Subclasses implement specific parsing logic.
+     * Subclasses implement specific parsing logic and return the appropriate
+     * direction subtype (MsgIncoming or MsgOutgoing).
      */
     @Override
-    public abstract MessageHistory parse(String text);
+    public abstract SwiftMessageBase parse(String text);
 
     /**
      * Basic check for a message type code like "MT103" or "pacs.008".

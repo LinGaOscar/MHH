@@ -38,7 +38,8 @@
                             ▼
 ┌───────────────────────────────────────────────────────────────┐
 │                   MHH 資料庫 (MS SQL Server)                   │
-│  MSG_HISTORY   MSG_DOWNLOAD   MSG_APPROVAL   MSG_SWAL_SYNC    │
+│  MSG_INCOMING  MSG_OUTGOING   MSG_DOWNLOAD   MSG_APPROVAL     │
+│  MSG_SWAL_SYNC                                                 │
 │  USER   USER_ROLE   USER_CUST   HR_USER   HR_UNIT             │
 │  SYS_LOGS   USER_LOGS   JOBS_LOGS   JOBS_CONF                 │
 └───────────────────────────┬───────────────────────────────────┘
@@ -71,7 +72,7 @@
 3. **處理**：
    - 抓取自上次同步時間點後的新紀錄
    - 數據對應並轉換至 MHH Schema
-4. **目的地**：`MSG_SWAL_SYNC`（暫存）→ `MSG_HISTORY`（主表）
+4. **目的地**：`MSG_SWAL_SYNC`（暫存）→ `MSG_INCOMING`（進電主表）
 
 ### 流程 B：PDF 電文匯入與解析
 
@@ -84,7 +85,7 @@
    - 依文件內文識別電文類型（如：MT103, pacs.008）
    - 動態選擇對應的 `PdfParser` 實作
    - 提取業務欄位（發報行、收報行、金額、幣別、交易編號等）
-4. **目的地**：解析後欄位寫入 `MSG_HISTORY`；原始 PDF 移至 `\data\ARCHIVE\`
+4. **目的地**：進電寫入 `MSG_INCOMING`，出電寫入 `MSG_OUTGOING`；原始 PDF 移至 `\data\ARCHIVE\`
 
 ### 流程 C：PDF 合併下載（使用者觸發）
 

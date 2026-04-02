@@ -1,7 +1,10 @@
 package com.mhh.batch.job;
 
-import com.mhh.common.entity.MessageHistory;
-import com.mhh.common.repository.MessageHistoryRepository;
+import com.mhh.common.entity.MsgIncoming;
+import com.mhh.common.entity.MsgOutgoing;
+import com.mhh.common.entity.SwiftMessageBase;
+import com.mhh.common.repository.MsgIncomingRepository;
+import com.mhh.common.repository.MsgOutgoingRepository;
 import com.mhh.core.parser.ParserFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
@@ -20,12 +23,12 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
- * Job to scan MX/MT folders, extract PDF text, parse and save to MSG_HISTORY.
+ * Job to scan MX/MT folders, extract PDF text, parse and save to MSG_INCOMING or MSG_OUTGOING.
  *
  * Flow per file:
  *   1. Extract text via PDFBox.
  *   2. Delegate to ParserFactory (Strategy pattern).
- *   3a. Parse success → save to DB → move to ARCHIVE.
+ *   3a. Parse success → save to correct table → move to ARCHIVE.
  *   3b. No parser found → move to ERROR (isolated for manual review).
  *   3c. Exception → log error, leave file in place for retry next run.
  */
@@ -34,7 +37,8 @@ import java.util.Optional;
 public class PdfImportJob implements MhhJob {
 
     private final ParserFactory parserFactory;
-    private final MessageHistoryRepository repository;
+    private final MsgIncomingRepository incomingRepository;
+    private final MsgOutgoingRepository outgoingRepository;
 
     @Value("${mhh.paths.mx}")
     private String mxPath;
@@ -48,9 +52,12 @@ public class PdfImportJob implements MhhJob {
     @Value("${mhh.paths.error}")
     private String errorPath;
 
-    public PdfImportJob(ParserFactory parserFactory, MessageHistoryRepository repository) {
+    public PdfImportJob(ParserFactory parserFactory,
+                        MsgIncomingRepository incomingRepository,
+                        MsgOutgoingRepository outgoingRepository) {
         this.parserFactory = parserFactory;
-        this.repository = repository;
+        this.incomingRepository = incomingRepository;
+        this.outgoingRepository = outgoingRepository;
     }
 
     @Override
@@ -88,15 +95,22 @@ public class PdfImportJob implements MhhJob {
         log.info("Processing PDF: {}", file.getName());
         try {
             String text = extractText(file);
-            Optional<MessageHistory> result = parserFactory.parse(text);
+            Optional<SwiftMessageBase> result = parserFactory.parse(text);
 
             if (result.isPresent()) {
-                MessageHistory msg = result.get();
-                msg.setMessageId(msg.getMessageId() != null ? msg.getMessageId() : file.getName());
+                SwiftMessageBase msg = result.get();
+                if (msg.getMessageId() == null) msg.setMessageId(file.getName());
                 msg.setSource("PDF");
                 msg.setSyncTime(LocalDateTime.now());
-                repository.save(msg);
-                log.info("Successfully imported {} as {}", file.getName(), msg.getMessageType());
+
+                if (msg instanceof MsgIncoming) {
+                    incomingRepository.save((MsgIncoming) msg);
+                } else if (msg instanceof MsgOutgoing) {
+                    outgoingRepository.save((MsgOutgoing) msg);
+                }
+
+                log.info("Successfully imported {} as {} ({})",
+                        file.getName(), msg.getMessageType(), msg.getClass().getSimpleName());
                 moveFile(file, archivePath, "archive");
             } else {
                 log.warn("No suitable parser found for PDF: {} — moving to error folder.", file.getName());
@@ -104,7 +118,6 @@ public class PdfImportJob implements MhhJob {
             }
         } catch (Exception e) {
             log.error("Failed to process PDF {}: {}", file.getName(), e.getMessage(), e);
-            // Leave the file in place for retry on the next run
         }
     }
 
@@ -114,16 +127,11 @@ public class PdfImportJob implements MhhJob {
         }
     }
 
-    /**
-     * Move a file to the target directory, appending a timestamp suffix on name collision
-     * to avoid silently overwriting existing files.
-     */
     private void moveFile(File file, String targetDir, String label) {
         try {
             Files.createDirectories(Paths.get(targetDir));
             Path target = Paths.get(targetDir, file.getName());
 
-            // Avoid overwriting: append timestamp if file already exists
             if (Files.exists(target)) {
                 String name = file.getName();
                 int dot = name.lastIndexOf('.');

@@ -1,18 +1,21 @@
 package com.mhh.common.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "MSG_HISTORY")
+/**
+ * 進電 / 出電共用欄位，透過 @MappedSuperclass 分別對應
+ * {@link MsgIncoming}（MSG_INCOMING）與 {@link MsgOutgoing}（MSG_OUTGOING）兩張表。
+ */
+@MappedSuperclass
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class MessageHistory {
+public abstract class SwiftMessageBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,11 +48,11 @@ public class MessageHistory {
 
     @Lob
     @Column(name = "PARAMETERS")
-    private String parameters; // Used for flexible/extra fields in JSON format
+    private String parameters;
 
     @Column(name = "SYNC_TIME")
     private LocalDateTime syncTime;
 
     @Column(name = "SOURCE", length = 20)
-    private String source; // e.g., "SWAL", "PDF"
+    private String source; // SWAL, PDF
 }

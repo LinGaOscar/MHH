@@ -1,7 +1,7 @@
 package com.mhh.batch.job;
 
-import com.mhh.common.entity.MessageHistory;
-import com.mhh.common.repository.MessageHistoryRepository;
+import com.mhh.common.entity.MsgIncoming;
+import com.mhh.common.repository.MsgIncomingRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,11 +14,12 @@ import java.util.Map;
 
 /**
  * Job to synchronize message data from external SWAL (Oracle) database.
+ * SWAL messages are always received by this bank → saved to MSG_INCOMING.
  *
  * Flow:
  *   1. Query SWAL for unsynced rows (SYNC_STATUS = 'N'), in batches of 500.
- *   2. Skip rows already present in MSG_HISTORY (dedup by MESSAGE_ID).
- *   3. Persist new rows to MSG_HISTORY.
+ *   2. Skip rows already present in MSG_INCOMING (dedup by MESSAGE_ID).
+ *   3. Persist new rows to MSG_INCOMING.
  *   4. Mark synced rows in SWAL as SYNC_STATUS = 'Y'.
  *
  * NOTE: SQL column names below are placeholders — update once the actual
@@ -30,7 +31,6 @@ public class SwalSyncJob implements MhhJob {
 
     private static final int BATCH_SIZE = 500;
 
-    // Placeholder SQL — replace table/column names with real SWAL schema
     private static final String QUERY_SQL =
             "SELECT MSG_ID, MSG_TYPE, SENDER, RECEIVER, RAW_CONTENT " +
             "FROM SWAL_MESSAGES WHERE SYNC_STATUS = 'N' AND ROWNUM <= " + BATCH_SIZE;
@@ -40,12 +40,12 @@ public class SwalSyncJob implements MhhJob {
             "WHERE MSG_ID = ?";
 
     private final JdbcTemplate swalJdbcTemplate;
-    private final MessageHistoryRepository messageHistoryRepository;
+    private final MsgIncomingRepository incomingRepository;
 
     public SwalSyncJob(@Qualifier("swalJdbcTemplate") JdbcTemplate swalJdbcTemplate,
-                       MessageHistoryRepository messageHistoryRepository) {
+                       MsgIncomingRepository incomingRepository) {
         this.swalJdbcTemplate = swalJdbcTemplate;
-        this.messageHistoryRepository = messageHistoryRepository;
+        this.incomingRepository = incomingRepository;
     }
 
     @Override
@@ -69,35 +69,32 @@ public class SwalSyncJob implements MhhJob {
                 continue;
             }
 
-            if (messageHistoryRepository.findByMessageId(msgId).isPresent()) {
+            if (incomingRepository.findByMessageId(msgId).isPresent()) {
                 log.debug("Message {} already exists, marking as synced.", msgId);
                 synced.add(msgId);
                 continue;
             }
 
             try {
-                MessageHistory msg = MessageHistory.builder()
-                        .messageId(msgId)
-                        .messageType(asString(row, "MSG_TYPE"))
-                        .sender(asString(row, "SENDER"))
-                        .receiver(asString(row, "RECEIVER"))
-                        .content(asString(row, "RAW_CONTENT"))
-                        .parameters(toJson(row))
-                        .source("SWAL")
-                        .syncTime(LocalDateTime.now())
-                        .build();
+                MsgIncoming msg = new MsgIncoming();
+                msg.setMessageId(msgId);
+                msg.setMessageType(asString(row, "MSG_TYPE"));
+                msg.setSender(asString(row, "SENDER"));
+                msg.setReceiver(asString(row, "RECEIVER"));
+                msg.setContent(asString(row, "RAW_CONTENT"));
+                msg.setParameters(toJson(row));
+                msg.setSource("SWAL");
+                msg.setSyncTime(LocalDateTime.now());
 
-                messageHistoryRepository.save(java.util.Objects.requireNonNull(msg));
+                incomingRepository.save(msg);
                 synced.add(msgId);
                 log.info("Synced message {} from SWAL.", msgId);
 
             } catch (Exception e) {
                 log.error("Failed to sync message {}: {}", msgId, e.getMessage(), e);
-                // Do NOT add to synced — will be retried next run
             }
         }
 
-        // Mark successfully processed rows in SWAL
         if (!synced.isEmpty()) {
             for (Object id : synced) {
                 swalJdbcTemplate.update(UPDATE_STATUS_SQL, id);
@@ -108,31 +105,21 @@ public class SwalSyncJob implements MhhJob {
         log.info("SwalSyncJob completed. Processed: {}, Synced: {}", rows.size(), synced.size());
     }
 
-    /**
-     * Safely cast a column value to String.
-     * Returns null (not the string "null") when the column is absent or SQL NULL.
-     */
     private String asString(Map<String, Object> row, String column) {
         Object value = row.get(column);
         return (value != null) ? value.toString() : null;
     }
 
-    /**
-     * Serialize the raw row map to a simple JSON string for the PARAMETERS column.
-     * Only includes non-null columns that are not already mapped to dedicated fields.
-     */
     private String toJson(Map<String, Object> row) {
         StringBuilder sb = new StringBuilder("{");
         boolean first = true;
         for (Map.Entry<String, Object> entry : row.entrySet()) {
             String key = entry.getKey();
-            // Skip columns already mapped to dedicated MSG_HISTORY fields
             if ("MSG_ID".equals(key) || "MSG_TYPE".equals(key) ||
                 "SENDER".equals(key) || "RECEIVER".equals(key) || "RAW_CONTENT".equals(key)) {
                 continue;
             }
             if (entry.getValue() == null) continue;
-
             if (!first) sb.append(",");
             sb.append("\"").append(escapeJson(key)).append("\":")
               .append("\"").append(escapeJson(entry.getValue().toString())).append("\"");

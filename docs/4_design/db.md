@@ -37,19 +37,25 @@
 
 | 資料表 | 說明 |
 |:--|:--|
-| `MSG_HISTORY` | SWIFT 電文歷史主表 |
+| `MSG_INCOMING` | 進電主表（對本行收到的 SWIFT 電文，來源：SWAL / PDF） |
+| `MSG_OUTGOING` | 出電主表（本行發出的 SWIFT 電文，來源：PDF） |
 | `MSG_DOWNLOAD` | 預約下載詳情與合併狀態（含 `EXPIRY_DATE`、`FILE_SIZE`）；單筆免放行，多筆需預約 |
 | `MSG_APPROVAL` | 工作流審核任務表 |
 | `MSG_SWAL_SYNC` | SWALLOW 原始資料同步至本系統之暫存表 |
 
+> **兩表共用欄位**（由 `SwiftMessageBase` @MappedSuperclass 定義）：  
+> `MESSAGE_ID`（UNIQUE）、`MESSAGE_TYPE`、`SENDER`、`RECEIVER`、`AMOUNT`、`CURRENCY`、`REFERENCE`、`CONTENT`、`PARAMETERS`（JSON）、`SYNC_TIME`、`SOURCE`（SWAL / PDF）
+
 ### 2.4 系統監控 (System & Monitoring)
 
-| 資料表 | 說明 | 保留期限 |
-|:--|:--|:--|
-| `SYS_LOGS` | 系統運行錯誤、AOP 例外日誌 | 1 年 |
-| `USER_LOGS` | 使用者行為稽核（查詢、下載、申請、審核） | 1 年 |
-| `JOBS_CONF` | 背景任務配置（Cron 各分段、IS_ENABLED 開關） | 長期保留 |
-| `JOBS_LOGS` | 所有排程 Job 執行歷史（含 Start/End Time、Status、Stack Trace） | 3 個月 |
+| 資料表 / 檔案 | 說明 | 保留期限 | 儲存位置 |
+|:--|:--|:--|:--|
+| `USER_LOGS` | 使用者行為稽核（登入/登出、查詢、下載、預約、審核） | 1 年 | **DB** |
+| `JOBS_CONF` | 背景任務配置（Cron 各分段、IS_ENABLED 開關） | 長期保留 | DB |
+| `sys.log` | 系統 WARN / ERROR 異常，由 Logback AOP 寫入 | 1 年 | **本機檔案** |
+| `batch.log` | 排程 Job 執行歷程（Start/End、Status、Error Msg） | 90 天 | **本機檔案** |
+
+> `SYS_LOGS` 與 `JOBS_LOGS` 資料表保留於 schema 中（未刪除），但已不再寫入；日誌改由 Logback 滾動策略管理本機檔案。
 
 ---
 
@@ -64,18 +70,19 @@
 
 ## 4. 資料清理策略
 
-| 資料類型 | 保留規則 |
-|:--|:--|
-| `MSG_DOWNLOAD` 合併實體檔案 | 合併後保留 **6 個月**（`EXPIRY_DATE` 欄位標記） |
-| `SYS_LOGS` / `USER_LOGS` | 保留 **1 年**，由 `LogCleanupJob` 自動清理 |
-| `JOBS_LOGS` | 保留 **3 個月**，由 `LogCleanupJob` 自動清理 |
+| 資料類型 | 保留規則 | 清理方式 |
+|:--|:--|:--|
+| `MSG_DOWNLOAD` 合併實體檔案 | 合併後保留 **6 個月**（`EXPIRY_DATE` 欄位標記） | IT 手動或排程刪除 |
+| `USER_LOGS` | 保留 **1 年** | `LogCleanupJob` 自動清理 |
+| `batch.log` 本機日誌檔 | 保留 **90 天** | Logback `TimeBasedRollingPolicy` 自動滾動 |
+| `sys.log` 本機日誌檔 | 保留 **1 年** | Logback `TimeBasedRollingPolicy` 自動滾動 |
 
 ---
 
 ## 5. 建置進度
 
-- [ ] **Step 1**：初始化資料庫（建立 `MHH_DB`，匯入 DDL）
-- [ ] **Step 2**：核心表單設計（`USER`、`MSG_HISTORY`、`MSG_APPROVAL`、`MSG_DOWNLOAD` 索引與關聯；`SYS_LOGS`、`USER_LOGS`、`JOBS_LOGS`）
-- [ ] **Step 3**：排程控制表實施（`JOBS_CONF` 與 `JOBS_LOGS`）
-- [ ] **Step 4**：JPA Repository 實作（Entity Mapping，配置外部來源 Sync 表）
-- [ ] **Step 5**：資料清理策略驗證（測試 `LogCleanupJob` 正確清除過期資料）
+- [x] **Step 1**：初始化資料庫（建立 `MHH_DB`，匯入 DDL）
+- [x] **Step 2**：核心表單設計（`USER`、`MSG_INCOMING`、`MSG_OUTGOING`、`MSG_APPROVAL`、`MSG_DOWNLOAD`；`USER_LOGS`、`JOBS_CONF`）
+- [x] **Step 3**：排程控制表實施（`JOBS_CONF`）
+- [x] **Step 4**：JPA Repository 實作（`MsgIncomingRepository`、`MsgOutgoingRepository`、`UserLogRepository` 含清理方法）
+- [x] **Step 5**：資料清理策略實作（`LogCleanupJob` 清 `USER_LOGS`；Logback 管理本機日誌檔）

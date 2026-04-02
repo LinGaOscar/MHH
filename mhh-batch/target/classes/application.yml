@@ -34,3 +34,4 @@ mhh:
     mt: d:/MHH_FILES/MT
     archive: d:/MHH_FILES/ARCHIVE
     error: d:/MHH_FILES/ERROR
+    logs: d:/MHH_FILES/LOGS

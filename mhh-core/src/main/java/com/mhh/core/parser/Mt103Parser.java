@@ -1,14 +1,17 @@
 package com.mhh.core.parser;
 
-import com.mhh.common.entity.MessageHistory;
+import com.mhh.common.entity.MsgIncoming;
+import com.mhh.common.entity.SwiftMessageBase;
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.springframework.stereotype.Component;
 
 /**
- * Example parser for SWIFT MT103 messages.
+ * Parser for SWIFT MT103 (Customer Credit Transfer) messages.
+ * MT103 is always an incoming payment instruction → returns {@link MsgIncoming}.
  */
 @Component
 public class Mt103Parser extends AbstractPdfParser {
@@ -24,8 +27,8 @@ public class Mt103Parser extends AbstractPdfParser {
     }
 
     @Override
-    public MessageHistory parse(String text) {
-        MessageHistory msg = new MessageHistory();
+    public SwiftMessageBase parse(String text) {
+        MsgIncoming msg = new MsgIncoming();
         msg.setMessageType("MT103");
 
         // :20: — Sender's Reference (Message ID)
@@ -43,7 +46,6 @@ public class Mt103Parser extends AbstractPdfParser {
         // :32A: — YYMMDDCCCAMOUNT
         String field32 = extract(text, ":32A:\\s*(\\S+)");
         if (field32 != null) {
-            // Format: 6-digit date + 3-letter CCY + amount (comma = decimal)
             Matcher m = Pattern.compile("^\\d{6}([A-Z]{3})([\\d,]+)")
                     .matcher(field32);
             if (m.find()) {
@@ -60,10 +62,6 @@ public class Mt103Parser extends AbstractPdfParser {
         return msg;
     }
 
-    /**
-     * Extract the name/BIC from a party tag (e.g. :50K: or :59:).
-     * Skips the first line if it starts with '/' (account number).
-     */
     private String extractPartyName(String text, String tagRegex) {
         String raw = extract(text, ":" + tagRegex + ":\\s*(.*?)(?=:\\d{2}[A-Z]?:|$)");
         if (raw == null) return null;

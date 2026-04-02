@@ -65,8 +65,11 @@ SELECT * FROM [JOBS_CONF]; -- 應該會看到初始排程配置
     ```
 *   **資料表說明**:
     *   `JOBS_CONF`: 任務主表，包含各項 Job 的 Cron 設定與開關。
-    *   `JOBS_LOGS`: 任務執行流水帳（由 AOP 自動記錄，預設 **保留 3 個月**，由 `LogCleanupJob` 定期清理）。
-    *   `SYS_LOGS`: 系統級錯誤日誌。
+    *   `USER_LOGS`: 使用者行為稽核日誌（登入/查詢/預約/下載，保留 **1 年**，由 `LogCleanupJob` 定期清理）。
+
+*   **本機日誌檔案**（`d:/MHH_FILES/LOGS/`）:
+    *   `batch.log` / `batch.YYYY-MM-DD.log`：批次作業執行記錄，保留 **90 天**（Logback 自動滾動）。
+    *   `sys.log` / `sys.YYYY-MM-DD.log`：系統 WARN / ERROR 異常，保留 **1 年**（Logback 自動滾動）。
 *   **暫停某個任務 (例如：暫停同步)**:
     ```sql
     UPDATE [JOBS_CONF] SET [IS_ENABLED] = 0 WHERE [JOB_NAME] = 'SwallowSyncJob';

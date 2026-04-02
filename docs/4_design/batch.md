@@ -22,11 +22,11 @@
 
 | Job | 說明 | 資料流向 |
 |:--|:--|:--|
-| `SwallowSyncJob` | 從外部 FTP 擷取 SWAL 資料 | → `MSG_SWAL_SYNC`（暫存）→ `MSG_HISTORY` |
-| `PdfImportJob` | 掃描 FTP，解析原始 PDF 並匯入 | → `MSG_HISTORY`；PDF → `\data\ARCHIVE\` |
+| `SwalSyncJob` | 從外部 Oracle SWAL 讀取電文 | → `MSG_INCOMING` |
+| `PdfImportJob` | 掃描 MX/MT 目錄，解析原始 PDF 並匯入 | 進電 → `MSG_INCOMING`；出電 → `MSG_OUTGOING`；PDF → `\data\ARCHIVE\` |
 | `HrSyncJob` | 同步員工在職狀態 | → `HR_USER`、`HR_UNIT` |
 | `ReservationMergeJob` | 執行使用者預約的多筆 PDF 合併 | → `\data\TEMP\`；狀態更新 `MSG_DOWNLOAD` |
-| `LogCleanupJob` | 清理過期日誌（每日執行） | 刪除 `JOBS_LOGS`（3 個月）、`SYS_LOGS` / `USER_LOGS`（1 年）過期紀錄 |
+| `LogCleanupJob` | 清理過期資料（每日執行） | 刪除 `USER_LOGS` 1 年以上紀錄；本機 `batch.log`/`sys.log` 由 Logback 滾動策略自動管理 |
 | `JobRefresher` | 動態同步 `JOBS_CONF`，更新執行中的排程 | — |
 
 ### 2.2 AOP 自動日誌 (JobLoggingAspect)
@@ -34,8 +34,9 @@
 所有 Job 無需手動埋點，由 AOP 自動處理：
 
 - 自動攔截所有 `MhhJob.execute()` 方法
-- 任務啟動時記錄 `START_TIME`
-- 任務完成時記錄 `END_TIME`、`STATUS`（`SUCCESS` / `FAILED`）、`ERROR_MSG`（如有）
+- 使用專用 logger `BATCH_LOG` 寫入本機 `batch.log`（由 `logback-spring.xml` 設定）
+- 任務啟動時記錄 `jobName`、`startTime`
+- 任務完成時記錄 `endTime`、`status`（`SUCCESS` / `FAILED`）、`error`（如有）
 - 同步更新 `JOBS_CONF.LAST_RUN` 欄位
 
 ---
@@ -91,7 +92,7 @@ CRON_EXPRESSION = CRON_SEC + " " + CRON_MIN + " " + CRON_HOUR + " " + CRON_DOM +
 ## 6. 建置進度
 
 - [x] **Step 1**：專案初始化與模組結構（依賴 `mhh-common`）
-- [ ] **Step 2**：動態排程框架（`DynamicJobService`、`JobRefresher`）
-- [ ] **Step 3**：`SwallowSyncJob` 實作（SWAL → `MSG_SWAL_SYNC`）
-- [ ] **Step 4**：`PdfImportJob` + 策略模式 Parser 實作（含 MT103 範例）
-- [ ] **Step 5**：`LogCleanupJob` + `ReservationMergeJob` 實作
+- [x] **Step 2**：動態排程框架（`DynamicJobService`、`JobRefresher`）
+- [x] **Step 3**：`SwalSyncJob` 實作（SWAL → `MSG_INCOMING`）
+- [x] **Step 4**：`PdfImportJob` + 策略模式 Parser 實作（`Mt103Parser`、`MtGenericParser`、`MxGenericParser`）
+- [x] **Step 5**：`LogCleanupJob`（清 `USER_LOGS`）；本機日誌由 `logback-spring.xml` 管理

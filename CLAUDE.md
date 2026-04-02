@@ -50,8 +50,8 @@ mhh-common  ←── mhh-core  ←── mhh-ap
 ## Data Flows
 
 ```
-SWAL Sync:  Oracle SWAL DB (read-only) → SwallowSyncJob → MSG_SWAL_SYNC → MSG_HISTORY
-PDF Import: /data/MX|MT/ → PdfImportJob → ParserFactory (strategy) → MSG_HISTORY + /data/ARCHIVE
+SWAL Sync:  Oracle SWAL DB (read-only) → SwalSyncJob → MSG_INCOMING
+PDF Import: /data/MX|MT/ → PdfImportJob → ParserFactory (strategy) → MSG_INCOMING or MSG_OUTGOING + /data/ARCHIVE
 Download:   User request → MSG_DOWNLOAD (PENDING) → Manager approval → ReservationMergeJob → ZIP → /data/TEMP
 ```
 
@@ -63,7 +63,7 @@ Download:   User request → MSG_DOWNLOAD (PENDING) → Manager approval → Res
 
 3. **Dynamic Job Scheduling** — Batch cron expressions are stored in the `JOBS_CONF` database table. The scheduler refreshes every 20 minutes (`mhh.jobs.refresh-rate`). Jobs can be enabled/disabled without restarting the application.
 
-4. **AOP-based Auditing** — User actions are automatically written to `USER_LOGS` via Spring AOP in `mhh-core`. System errors go to `SYS_LOGS`.
+4. **AOP-based Auditing** — `@LogAction` annotation + `UserActionAspect` in `mhh-ap` writes user actions asynchronously to `USER_LOGS` (`@Async` + `Propagation.REQUIRES_NEW`). `AuthEventListener` captures login/logout events. Batch job execution is logged to local files via `JobLoggingAspect` (not DB).
 
 ## Database
 
@@ -72,15 +72,15 @@ Download:   User request → MSG_DOWNLOAD (PENDING) → Manager approval → Res
 - **Schema init:** [DB-init/01_schema.sql](DB-init/01_schema.sql)
 - **Docker setup:** [DB-init/docker-compose.yml](DB-init/docker-compose.yml)
 
-Key tables: `MSG_HISTORY`, `MSG_DOWNLOAD`, `MSG_APPROVAL`, `USER`, `USER_ROLE`, `JOBS_CONF`, `JOBS_LOGS`, `SYS_LOGS`, `USER_LOGS`.
+Key tables: `MSG_INCOMING`, `MSG_OUTGOING`, `MSG_DOWNLOAD`, `MSG_APPROVAL`, `USER`, `USER_ROLE`, `JOBS_CONF`, `USER_LOGS`.
 
-Log retention: `JOBS_LOGS` 3 months, `SYS_LOGS` / `USER_LOGS` 1 year (enforced by `LogCleanupJob`).
+**Logging strategy:** Only `USER_LOGS` is stored in DB (1-year retention, cleaned by `LogCleanupJob`). Batch job logs and system WARN/ERROR go to local files under `d:/MHH_FILES/LOGS/` via Logback — `batch.log` (90-day rotation), `sys.log` (1-year rotation).
 
 ## Configuration Files
 
 - [mhh-ap/src/main/resources/application.yml](mhh-ap/src/main/resources/application.yml) — web app config (port, security, Thymeleaf, i18n)
 - [mhh-batch/src/main/resources/application.yml](mhh-batch/src/main/resources/application.yml) — batch config (PDF paths, Oracle datasource, job refresh rate)
-- `mhh-ap` uses `spring.jpa.hibernate.ddl-auto: update`; `mhh-batch` uses `none` (schema is read-only from batch's perspective)
+- `mhh-ap` uses `spring.jpa.hibernate.ddl-auto: update`; `mhh-batch` uses `none` (manages schema via `DB-init/01_schema.sql` only)
 
 ## Documentation
 

@@ -42,7 +42,7 @@
 | `IMessageService` | 封裝電文查詢、歷史存取等業務邏輯 |
 | `IApprovalService` | 通用 Maker-Checker 邏輯實作（含分行與參數業務隔離） |
 | `IUserService` | SSO 使用者同步、HR 資訊整合、自訂角色權限管理 |
-| `ILoggingService` | AOP 雙重日誌記錄（`SYS_LOGS` + `USER_LOGS`） |
+| `UserLogService` | 非同步寫入 `USER_LOGS`（`@Async` + `REQUIRES_NEW`，錯誤不影響主流程） |
 
 ---
 
@@ -50,20 +50,20 @@
 
 | Repository | 對應資料表 | 說明 |
 |:--|:--|:--|
-| `MsgHistoryRepository` | `MSG_HISTORY` | 基礎 JPA CRUD 操作 |
+| `MsgIncomingRepository` | `MSG_INCOMING` | 進電 CRUD；含 `findByMessageId` |
+| `MsgOutgoingRepository` | `MSG_OUTGOING` | 出電 CRUD；含 `findByMessageId` |
 | `MsgDownloadRepository` | `MSG_DOWNLOAD` | 預約狀態管理 |
 | `MsgApprovalRepository` | `MSG_APPROVAL` | 工作流任務管理 |
 | `UserRepository` | `USER`、`USER_ROLE` | 使用者基礎操作 |
 | `NativeQueryRepository` | 多表 | `NamedParameterJdbcTemplate` 高性能複雜 SQL |
-| `SysLogRepository` | `SYS_LOGS` | 系統日誌寫入 |
-| `UserLogRepository` | `USER_LOGS` | 使用者稽核日誌寫入 |
+| `UserLogRepository` | `USER_LOGS` | 使用者稽核日誌寫入；含 `deleteOlderThan` |
 
 ---
 
 ## 5. 建置進度
 
 - [x] **Step 1**：專案初始化（Maven 多模組、Thymeleaf 配置）
-- [ ] **Step 2**：基礎架構開發（AOP 日誌、SSO 安全過濾器）
-- [ ] **Step 3**：Service 層核心邏輯（PDF 合併與電文解析）
-- [ ] **Step 4**：Controller 接口逐一實作
+- [x] **Step 2**：基礎架構開發（`UserActionAspect` AOP 日誌、`AuthEventListener` 登入稽核、Spring Security logout handler）
+- [ ] **Step 3**：Service 層核心邏輯（PDF 合併與電文查詢）
+- [ ] **Step 4**：Controller 接口逐一實作（`MsgQueryController`、`MsgDownloadController` 等）
 - [ ] **Step 5**：整合測試（Maker-Checker 流程 + SSO 流程驗證）
