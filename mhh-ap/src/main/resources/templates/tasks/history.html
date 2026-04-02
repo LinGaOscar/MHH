@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<body>
+<div layout:fragment="content" th:with="activePage='history', activeGroup='task'">
+
+    <div class="mb-3">
+        <h2 class="fw-bold"><i class="bi bi-person-lines-fill me-2"></i>使用者電磁軌跡</h2>
+    </div>
+
+    <!-- Search Form -->
+    <div class="card-premium mb-3">
+        <form id="trailSearchForm">
+            <div class="row g-2 align-items-end">
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">時間範圍</label>
+                    <div class="d-flex align-items-center gap-1">
+                        <input type="datetime-local" class="form-control form-control-sm query-input" id="dateFrom" name="dateFrom">
+                        <span class="text-muted">~</span>
+                        <input type="datetime-local" class="form-control form-control-sm query-input" id="dateTo" name="dateTo">
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">使用者</label>
+                    <input type="text" class="form-control form-control-sm query-input" id="userId" name="userId" style="width:120px" placeholder="User ID">
+                </div>
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">動作類別</label>
+                    <select class="form-select form-select-sm query-input" id="action" name="action" style="min-width:130px">
+                        <option value="">全部</option>
+                        <option value="LOGIN">LOGIN</option>
+                        <option value="LOGOUT">LOGOUT</option>
+                        <option value="VIEW_TRAIL">VIEW_TRAIL</option>
+                        <option value="SEARCH">SEARCH</option>
+                        <option value="DOWNLOAD">DOWNLOAD</option>
+                        <option value="APPROVE">APPROVE</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label text-muted small mb-1">狀態</label>
+                    <select class="form-select form-select-sm query-input" id="status" name="status" style="min-width:100px">
+                        <option value="">全部</option>
+                        <option value="SUCCESS">SUCCESS</option>
+                        <option value="FAILED">FAILED</option>
+                    </select>
+                </div>
+                <div class="col-auto ms-auto d-flex gap-1">
+                    <button type="button" class="btn btn-primary btn-sm px-3" onclick="doSearch(1)">
+                        <i class="bi bi-search me-1"></i>查詢
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary btn-sm px-3" onclick="resetForm()">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>重置
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Table -->
+    <div class="card-premium" style="overflow:hidden">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <small id="resultMsg" class="text-muted">*** 無資料顯示 ***</small>
+            <small id="queryTime" class="text-muted"></small>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm query-table mb-0">
+                <thead>
+                    <tr>
+                        <th class="text-nowrap">時間</th>
+                        <th class="text-nowrap">使用者</th>
+                        <th class="text-nowrap">動作</th>
+                        <th class="text-nowrap">說明</th>
+                        <th class="text-nowrap">來源 IP</th>
+                        <th class="text-nowrap">狀態</th>
+                    </tr>
+                </thead>
+                <tbody id="resultBody">
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">請輸入條件後開始查詢</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Pagination -->
+        <div class="d-flex justify-content-between align-items-center mt-2" id="paginationArea" style="display:none!important">
+            <small class="text-muted" id="pageInfo"></small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0" id="pageList"></ul>
+            </nav>
+        </div>
+    </div>
+
+</div>
+
+<script th:inline="javascript">
+    let currentPage = 0;
+    const PAGE_SIZE = 20;
+
+    function doSearch(page) {
+        currentPage = (page || 1) - 1;
+        const dateFrom = document.getElementById('dateFrom').value;
+        const dateTo   = document.getElementById('dateTo').value;
+        const userId   = document.getElementById('userId').value.trim();
+        const action   = document.getElementById('action').value;
+        const status   = document.getElementById('status').value;
+
+        const params = new URLSearchParams({
+            page: currentPage,
+            size: PAGE_SIZE,
+            ...(dateFrom && { dateFrom }),
+            ...(dateTo   && { dateTo }),
+            ...(userId   && { userId }),
+            ...(action   && { action }),
+            ...(status   && { status }),
+        });
+
+        document.getElementById('resultMsg').textContent = '查詢中...';
+        document.getElementById('resultBody').innerHTML =
+            '<tr><td colspan="6" class="text-center text-muted py-4"><div class="spinner-border spinner-border-sm me-2"></div>載入中...</td></tr>';
+
+        axios.get('/api/user-trail?' + params.toString())
+            .then(res => {
+                const data = res.data;
+                const now = new Date().toLocaleString('zh-TW', {hour12: false});
+                document.getElementById('queryTime').textContent = 'Query Time: ' + now;
+
+                if (!data.content || data.content.length === 0) {
+                    document.getElementById('resultMsg').textContent = '*** 無資料顯示 ***';
+                    document.getElementById('resultBody').innerHTML =
+                        '<tr><td colspan="6" class="text-center text-muted py-4">查無資料</td></tr>';
+                    document.getElementById('paginationArea').style.display = 'none';
+                    return;
+                }
+
+                document.getElementById('resultMsg').textContent =
+                    `共 ${data.totalElements} 筆，第 ${data.page + 1} / ${data.totalPages} 頁`;
+                document.getElementById('paginationArea').style.removeProperty('display');
+
+                const tbody = data.content.map(r => `
+                    <tr>
+                        <td class="text-nowrap">${r.logTime}</td>
+                        <td>${r.userId || ''}</td>
+                        <td><span class="badge-action">${r.action || ''}</span></td>
+                        <td>${r.description || ''}</td>
+                        <td><code>${r.ipAddress || ''}</code></td>
+                        <td>${r.status === 'SUCCESS'
+                            ? '<span class="badge-success">SUCCESS</span>'
+                            : '<span class="badge-failed">FAILED</span>'}</td>
+                    </tr>`).join('');
+                document.getElementById('resultBody').innerHTML = tbody;
+
+                renderPagination(data.page, data.totalPages);
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('resultMsg').textContent = '查詢失敗';
+                document.getElementById('resultBody').innerHTML =
+                    '<tr><td colspan="6" class="text-center text-danger py-4">查詢發生錯誤，請稍後再試</td></tr>';
+            });
+    }
+
+    function renderPagination(current, total) {
+        const ul = document.getElementById('pageList');
+        const pages = [];
+        const prev = current > 0;
+        const next = current < total - 1;
+
+        pages.push(`<li class="page-item ${!prev ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="doSearch(${current}); return false;">&laquo;</a></li>`);
+
+        const start = Math.max(0, current - 2);
+        const end   = Math.min(total - 1, current + 2);
+        for (let i = start; i <= end; i++) {
+            pages.push(`<li class="page-item ${i === current ? 'active' : ''}">
+                <a class="page-link" href="#" onclick="doSearch(${i + 1}); return false;">${i + 1}</a></li>`);
+        }
+
+        pages.push(`<li class="page-item ${!next ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="doSearch(${current + 2}); return false;">&raquo;</a></li>`);
+
+        ul.innerHTML = pages.join('');
+        document.getElementById('pageInfo').textContent =
+            `第 ${current + 1} 頁，共 ${total} 頁`;
+    }
+
+    function resetForm() {
+        document.getElementById('trailSearchForm').reset();
+        document.getElementById('resultMsg').textContent = '*** 無資料顯示 ***';
+        document.getElementById('resultBody').innerHTML =
+            '<tr><td colspan="6" class="text-center text-muted py-4">請輸入條件後開始查詢</td></tr>';
+        document.getElementById('queryTime').textContent = '';
+        document.getElementById('paginationArea').style.display = 'none';
+    }
+</script>
+</body>
+</html>

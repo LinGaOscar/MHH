@@ -48,7 +48,7 @@
                     <a th:href="@{/tasks/todo}" class="submenu-item">
                         <i class="bi bi-clock-history me-2"></i>待辦事項
                     </a>
-                    <a th:href="@{/tasks/history}" class="submenu-item">
+                    <a th:href="@{/tasks/history}" class="submenu-item" th:classappend="${activePage == 'history' ? 'active' : ''}">
                         <i class="bi bi-archive me-2"></i>歷史紀錄
                     </a>
                 </div>

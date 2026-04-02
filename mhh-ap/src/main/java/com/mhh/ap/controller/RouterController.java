@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class RouterController {
 
-    @GetMapping({"/", "/index"})
+    @GetMapping("/index")
     public String index(Model model) {
         model.addAttribute("userName", "User");
         model.addAttribute("countryCode", "TW");
@@ -32,5 +32,10 @@ public class RouterController {
     @GetMapping("/outgoing")
     public String outgoing(Model model) {
         return "outgoing";
+    }
+
+    @GetMapping("/tasks/history")
+    public String taskHistory(Model model) {
+        return "tasks/history";
     }
 }

@@ -57,6 +57,7 @@
                      │  使用者瀏覽器  │
                      │ Vue.js 3 SPA │
                      └──────────────┘
+                     (Single Page Application - 單頁式應用)
 ```
 
 ---
