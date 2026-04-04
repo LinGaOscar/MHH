@@ -721,17 +721,3 @@
 | ☆ eventParam | `SysEvtNtfctn/EvtInf/EvtParam` | Event Parameter |
 
 ---
-
-## 欄位對應摘要（對應 MSG_HISTORY 資料表）
-
-| MSG_HISTORY 欄位 | MT 對應來源 | MX 對應來源 |
-|-----------------|------------|------------|
-| `MESSAGE_ID` | `:20:` | `GrpHdr/MsgId` |
-| `MESSAGE_TYPE` | 電文種類識別（如 MT103） | XML namespace 或根元素判斷 |
-| `SENDER` | `:50A/K:` 或 `:52A/D:` | `Dbtr/Nm` 或 `InstgAgt/BICFI` |
-| `RECEIVER` | `:59:` 或 `:57A/D:` | `Cdtr/Nm` 或 `InstdAgt/BICFI` |
-| `AMOUNT` | `:32A/32B:` 數字部分 | `IntrBkSttlmAmt` 或 `Amt` |
-| `CURRENCY` | `:32A/32B:` 貨幣碼 | `[@Ccy]` 屬性 |
-| `REFERENCE` | `:21:` 或 `:70:` | `EndToEndId` 或 `InstrId` |
-| `CONTENT` | 全文（`String text`） | 全 XML 文字 |
-| `PARAMETERS` | 其餘重要欄位（JSON） | 其餘重要欄位（JSON） |

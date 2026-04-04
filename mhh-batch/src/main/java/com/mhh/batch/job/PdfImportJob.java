@@ -1,10 +1,14 @@
 package com.mhh.batch.job;
 
 import com.mhh.common.entity.MsgIncoming;
+import com.mhh.common.entity.MsgIncomingTx;
 import com.mhh.common.entity.MsgOutgoing;
+import com.mhh.common.entity.MsgOutgoingTx;
 import com.mhh.common.entity.SwiftMessageBase;
 import com.mhh.common.repository.MsgIncomingRepository;
+import com.mhh.common.repository.MsgIncomingTxRepository;
 import com.mhh.common.repository.MsgOutgoingRepository;
+import com.mhh.common.repository.MsgOutgoingTxRepository;
 import com.mhh.core.parser.ParserFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
@@ -38,7 +42,9 @@ public class PdfImportJob implements MhhJob {
 
     private final ParserFactory parserFactory;
     private final MsgIncomingRepository incomingRepository;
+    private final MsgIncomingTxRepository incomingTxRepository;
     private final MsgOutgoingRepository outgoingRepository;
+    private final MsgOutgoingTxRepository outgoingTxRepository;
 
     @Value("${mhh.paths.mx}")
     private String mxPath;
@@ -54,10 +60,14 @@ public class PdfImportJob implements MhhJob {
 
     public PdfImportJob(ParserFactory parserFactory,
                         MsgIncomingRepository incomingRepository,
-                        MsgOutgoingRepository outgoingRepository) {
+                        MsgIncomingTxRepository incomingTxRepository,
+                        MsgOutgoingRepository outgoingRepository,
+                        MsgOutgoingTxRepository outgoingTxRepository) {
         this.parserFactory = parserFactory;
         this.incomingRepository = incomingRepository;
+        this.incomingTxRepository = incomingTxRepository;
         this.outgoingRepository = outgoingRepository;
+        this.outgoingTxRepository = outgoingTxRepository;
     }
 
     @Override
@@ -105,8 +115,10 @@ public class PdfImportJob implements MhhJob {
 
                 if (msg instanceof MsgIncoming) {
                     incomingRepository.save((MsgIncoming) msg);
+                    saveTx(incomingTxRepository, msg);
                 } else if (msg instanceof MsgOutgoing) {
                     outgoingRepository.save((MsgOutgoing) msg);
+                    saveTx(outgoingTxRepository, msg);
                 }
 
                 log.info("Successfully imported {} as {} ({})",
@@ -119,6 +131,26 @@ public class PdfImportJob implements MhhJob {
         } catch (Exception e) {
             log.error("Failed to process PDF {}: {}", file.getName(), e.getMessage(), e);
         }
+    }
+
+    private void saveTx(MsgIncomingTxRepository txRepo, SwiftMessageBase msg) {
+        if (msg.getMtContent() == null && msg.getMxContent() == null) return;
+        MsgIncomingTx tx = new MsgIncomingTx();
+        tx.setMessageId(msg.getMessageId());
+        tx.setMtContent(msg.getMtContent());
+        tx.setMxContent(msg.getMxContent());
+        tx.setSyncTime(LocalDateTime.now());
+        txRepo.save(tx);
+    }
+
+    private void saveTx(MsgOutgoingTxRepository txRepo, SwiftMessageBase msg) {
+        if (msg.getMtContent() == null && msg.getMxContent() == null) return;
+        MsgOutgoingTx tx = new MsgOutgoingTx();
+        tx.setMessageId(msg.getMessageId());
+        tx.setMtContent(msg.getMtContent());
+        tx.setMxContent(msg.getMxContent());
+        tx.setSyncTime(LocalDateTime.now());
+        txRepo.save(tx);
     }
 
     private String extractText(File file) throws IOException {

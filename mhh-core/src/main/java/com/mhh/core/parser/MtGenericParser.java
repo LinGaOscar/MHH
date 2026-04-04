@@ -36,7 +36,9 @@ public class MtGenericParser extends AbstractPdfParser {
 
         Matcher typeMatcher = MT_TYPE_PATTERN.matcher(text);
         if (typeMatcher.find()) {
-            msg.setMessageType("MT" + typeMatcher.group(1));
+            String typeCode = typeMatcher.group(1);
+            msg.setMtType(typeCode);
+            msg.setMessageType("MT" + typeCode);
         }
 
         msg.setMessageId(extractTag(text, "20"));
@@ -66,7 +68,7 @@ public class MtGenericParser extends AbstractPdfParser {
             msg.setReference(ref.replaceAll("\\s+", " ").trim());
         }
 
-        msg.setContent(text);
+        msg.setMtContent(text);
         return msg;
     }
 

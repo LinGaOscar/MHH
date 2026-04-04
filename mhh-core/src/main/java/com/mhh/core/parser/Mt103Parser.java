@@ -29,6 +29,7 @@ public class Mt103Parser extends AbstractPdfParser {
     @Override
     public SwiftMessageBase parse(String text) {
         MsgIncoming msg = new MsgIncoming();
+        msg.setMtType("103");
         msg.setMessageType("MT103");
 
         // :20: — Sender's Reference (Message ID)
@@ -56,7 +57,7 @@ public class Mt103Parser extends AbstractPdfParser {
             }
         }
 
-        msg.setContent(text);
+        msg.setMtContent(text);
         msg.setSyncTime(LocalDateTime.now());
 
         return msg;

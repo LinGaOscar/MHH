@@ -17,14 +17,14 @@
                 <div class="col-auto">
                     <label class="form-label text-muted small mb-1">電文日期</label>
                     <div class="d-flex align-items-center gap-1">
-                        <input type="datetime-local" class="form-control form-control-sm query-input" name="dateFrom">
+                        <input type="datetime-local" class="form-control form-control-sm query-input" id="dateFrom" name="dateFrom">
                         <span class="text-muted">~</span>
-                        <input type="datetime-local" class="form-control form-control-sm query-input" name="dateTo">
+                        <input type="datetime-local" class="form-control form-control-sm query-input" id="dateTo" name="dateTo">
                     </div>
                 </div>
                 <div class="col-auto">
                     <label class="form-label text-muted small mb-1">電文類別</label>
-                    <select class="form-select form-select-sm query-input" name="msgType" style="min-width:110px">
+                    <select class="form-select form-select-sm query-input" id="msgType" name="msgType" style="min-width:110px">
                         <option value="">全部</option>
                         <option value="fin">FIN</option>
                         <option value="pacs">pacs</option>
@@ -32,34 +32,28 @@
                     </select>
                 </div>
                 <div class="col-auto">
-                    <label class="form-label text-muted small mb-1">電文種類</label>
-                    <select class="form-select form-select-sm query-input" name="msgCategory" style="min-width:100px">
-                        <option value="">全部</option>
-                    </select>
+                    <label class="form-label text-muted small mb-1">發電行</label>
+                    <input type="text" class="form-control form-control-sm query-input" id="sender" name="sender" style="width:120px">
                 </div>
                 <div class="col-auto">
-                    <label class="form-label text-muted small mb-1">發電行</label>
-                    <input type="text" class="form-control form-control-sm query-input" name="sender" style="width:120px">
+                    <label class="form-label text-muted small mb-1">收電行</label>
+                    <input type="text" class="form-control form-control-sm query-input" id="receiver" name="receiver" style="width:120px">
                 </div>
             </div>
 
-            <!-- Row 2: 票別 / 金額 / Reference(SWP) -->
+            <!-- Row 2: 金額 / Reference(SWP) -->
             <div class="row g-2 mb-2 align-items-end">
-                <div class="col-auto">
-                    <label class="form-label text-muted small mb-1">票別</label>
-                    <input type="text" class="form-control form-control-sm query-input" name="ticketType" style="width:80px">
-                </div>
                 <div class="col-auto">
                     <label class="form-label text-muted small mb-1">金額</label>
                     <div class="d-flex align-items-center gap-1">
-                        <input type="number" class="form-control form-control-sm query-input" name="amountFrom" value="0" style="width:90px">
+                        <input type="number" class="form-control form-control-sm query-input" id="amountFrom" name="amountFrom" value="0" style="width:90px">
                         <span class="text-muted">~</span>
-                        <input type="number" class="form-control form-control-sm query-input" name="amountTo" placeholder="99,999,999,999.999" style="width:160px">
+                        <input type="number" class="form-control form-control-sm query-input" id="amountTo" name="amountTo" placeholder="99,999,999,999.999" style="width:160px">
                     </div>
                 </div>
                 <div class="col-auto">
                     <label class="form-label text-muted small mb-1">Reference(SWP)</label>
-                    <input type="text" class="form-control form-control-sm query-input" name="reference" style="width:150px">
+                    <input type="text" class="form-control form-control-sm query-input" id="reference" name="reference" style="width:150px">
                 </div>
             </div>
 
@@ -67,23 +61,23 @@
             <div class="row g-2 mb-2 align-items-end">
                 <div class="col-auto">
                     <label class="form-label text-muted small mb-1">TAG 20</label>
-                    <input type="text" class="form-control form-control-sm query-input" name="tag20" style="width:120px">
+                    <input type="text" class="form-control form-control-sm query-input" id="tag20" name="tag20" style="width:120px">
                 </div>
                 <div class="col-auto">
                     <label class="form-label text-muted small mb-1">TAG 21</label>
-                    <input type="text" class="form-control form-control-sm query-input" name="tag21" style="width:120px">
+                    <input type="text" class="form-control form-control-sm query-input" id="tag21" name="tag21" style="width:120px">
                 </div>
                 <div class="col-auto">
                     <label class="form-label text-muted small mb-1">OSN</label>
                     <div class="d-flex align-items-center gap-1">
-                        <input type="text" class="form-control form-control-sm query-input" name="osnFrom" style="width:80px">
+                        <input type="text" class="form-control form-control-sm query-input" id="osnFrom" name="osnFrom" style="width:80px">
                         <span class="text-muted">~</span>
-                        <input type="text" class="form-control form-control-sm query-input" name="osnTo" style="width:80px">
+                        <input type="text" class="form-control form-control-sm query-input" id="osnTo" name="osnTo" style="width:80px">
                     </div>
                 </div>
                 <div class="col-auto">
                     <label class="form-label text-muted small mb-1">電文單位別</label>
-                    <input type="text" class="form-control form-control-sm query-input" name="unitCode" value="FR1" style="width:80px">
+                    <input type="text" class="form-control form-control-sm query-input" id="unitCode" name="unitCode" style="width:80px">
                 </div>
             </div>
 
@@ -91,30 +85,37 @@
             <div class="row g-2 align-items-end">
                 <div class="col-auto">
                     <label class="form-label text-muted small mb-1">AML狀記</label>
-                    <select class="form-select form-select-sm query-input" name="amlFlag" style="min-width:90px">
+                    <select class="form-select form-select-sm query-input" id="amlFlag" name="amlFlag" style="min-width:90px">
                         <option value="">全部</option>
+                        <option value="Y">Y</option>
+                        <option value="N">N</option>
                     </select>
                 </div>
                 <div class="col-auto">
                     <label class="form-label text-muted small mb-1">AML核態</label>
-                    <select class="form-select form-select-sm query-input" name="amlStatus" style="min-width:90px">
+                    <select class="form-select form-select-sm query-input" id="amlStatus" name="amlStatus" style="min-width:90px">
                         <option value="">全部</option>
+                        <option value="PASS">PASS</option>
+                        <option value="HOLD">HOLD</option>
+                        <option value="REJECT">REJECT</option>
                     </select>
                 </div>
                 <div class="col-auto">
                     <label class="form-label text-muted small mb-1">in-Flow狀態</label>
-                    <select class="form-select form-select-sm query-input" name="inFlowStatus" style="min-width:90px">
+                    <select class="form-select form-select-sm query-input" id="flowStatus" name="flowStatus" style="min-width:90px">
                         <option value="">全部</option>
+                        <option value="Y">Y</option>
+                        <option value="N">N</option>
                     </select>
                 </div>
                 <div class="col-auto ms-auto d-flex gap-1">
-                    <button type="button" class="btn btn-primary btn-sm px-3" onclick="doSearch()">
+                    <button type="button" class="btn btn-primary btn-sm px-3" onclick="doSearch(1)">
                         <i class="bi bi-search me-1"></i>查詢
                     </button>
                     <button type="button" class="btn btn-outline-secondary btn-sm px-3">
                         <i class="bi bi-printer me-1"></i>列印
                     </button>
-                    <button type="reset" class="btn btn-outline-secondary btn-sm px-3">
+                    <button type="reset" class="btn btn-outline-secondary btn-sm px-3" onclick="resetForm()">
                         <i class="bi bi-arrow-counterclockwise me-1"></i>重置
                     </button>
                 </div>
@@ -137,41 +138,206 @@
                         <th class="text-nowrap">OSN</th>
                         <th class="text-nowrap">TAG 20</th>
                         <th class="text-nowrap">TAG 21</th>
-                        <th class="text-nowrap">AML核核狀態</th>
+                        <th class="text-nowrap">AML狀態</th>
                         <th class="text-nowrap">發電行</th>
                         <th class="text-nowrap">收電行</th>
                         <th class="text-nowrap">Value Date</th>
                         <th class="text-nowrap">幣別</th>
                         <th class="text-nowrap">金額</th>
-                        <th class="text-nowrap">In-Flow狀態</th>
+                        <th class="text-nowrap">In-Flow</th>
                         <th class="text-nowrap">Reference(SWP)</th>
                         <th class="text-nowrap">電文單位別</th>
-                        <th class="text-nowrap">電文日期</th>
                         <th class="text-nowrap">PDE</th>
-                        <th class="text-nowrap">PDM</th>
-                        <th class="text-nowrap">傳送業務系統狀態</th>
-                        <th class="text-nowrap">傳送業務系統時間</th>
                     </tr>
                 </thead>
                 <tbody id="resultBody">
                     <tr>
-                        <td colspan="19" class="text-center text-muted py-4">請輸入條件後開始查詢</td>
+                        <td colspan="15" class="text-center text-muted py-4">請輸入條件後開始查詢</td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-2" id="paginationArea" style="display:none!important">
+            <small class="text-muted" id="pageInfo"></small>
+            <nav><ul class="pagination pagination-sm mb-0" id="pageList"></ul></nav>
+        </div>
+    </div>
+
+    <!-- 電文內容 Modal -->
+    <div class="modal fade" id="contentModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title">電文內容 — <span id="modalMsgId"></span></h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-2">
+                    <div id="modalLoading" class="text-center py-4">
+                        <div class="spinner-border spinner-border-sm me-2"></div>載入中...
+                    </div>
+                    <div id="modalContent" style="display:none">
+                        <ul class="nav nav-tabs mb-2" id="contentTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="tab-mx" href="#" onclick="showTab('mx'); return false;">MX 電文</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-mt" href="#" onclick="showTab('mt'); return false;">MT 電文</a>
+                            </li>
+                        </ul>
+                        <pre id="mxContentPre" class="border rounded p-2 bg-dark text-light" style="max-height:60vh;overflow:auto;font-size:0.78rem;white-space:pre-wrap;word-break:break-all"></pre>
+                        <pre id="mtContentPre" class="border rounded p-2 bg-dark text-light" style="max-height:60vh;overflow:auto;font-size:0.78rem;white-space:pre-wrap;word-break:break-all;display:none"></pre>
+                    </div>
+                    <div id="modalEmpty" style="display:none" class="text-center text-muted py-4">尚無電文內容</div>
+                </div>
+            </div>
         </div>
     </div>
 
 </div>
 
 <script th:inline="javascript">
-function doSearch() {
-    const now = new Date().toLocaleString('zh-TW', {hour12: false});
-    document.getElementById('queryTime').textContent = 'Query Time: ' + now;
-    document.getElementById('resultMsg').textContent = '*** 無資料顯示 ***';
-    document.getElementById('resultBody').innerHTML =
-        '<tr><td colspan="19" class="text-center text-muted py-4">查無資料</td></tr>';
-}
+    let currentPage = 0;
+    const PAGE_SIZE = 20;
+    const COLS = 15;
+
+    function doSearch(page) {
+        currentPage = (page || 1) - 1;
+        const params = new URLSearchParams({
+            page: currentPage, size: PAGE_SIZE,
+            ...(v('dateFrom')   && { dateFrom:   v('dateFrom') }),
+            ...(v('dateTo')     && { dateTo:     v('dateTo') }),
+            ...(v('msgType')    && { msgType:    v('msgType') }),
+            ...(v('sender')     && { sender:     v('sender') }),
+            ...(v('receiver')   && { receiver:   v('receiver') }),
+            ...(v('amountFrom') && { amountFrom: v('amountFrom') }),
+            ...(v('amountTo')   && { amountTo:   v('amountTo') }),
+            ...(v('reference')  && { reference:  v('reference') }),
+            ...(v('tag20')      && { tag20:      v('tag20') }),
+            ...(v('tag21')      && { tag21:      v('tag21') }),
+            ...(v('osnFrom')    && { osnFrom:    v('osnFrom') }),
+            ...(v('osnTo')      && { osnTo:      v('osnTo') }),
+            ...(v('unitCode')   && { unitCode:   v('unitCode') }),
+            ...(v('amlFlag')    && { amlFlag:    v('amlFlag') }),
+            ...(v('amlStatus')  && { amlStatus:  v('amlStatus') }),
+            ...(v('flowStatus') && { flowStatus: v('flowStatus') }),
+        });
+
+        setMsg('查詢中...');
+        setBody(`<tr><td colspan="${COLS}" class="text-center text-muted py-4"><div class="spinner-border spinner-border-sm me-2"></div>載入中...</td></tr>`);
+
+        axios.get('/api/incoming?' + params)
+            .then(res => {
+                const data = res.data;
+                document.getElementById('queryTime').textContent =
+                    'Query Time: ' + new Date().toLocaleString('zh-TW', {hour12: false});
+
+                if (!data.content || data.content.length === 0) {
+                    setMsg('*** 無資料顯示 ***');
+                    setBody(`<tr><td colspan="${COLS}" class="text-center text-muted py-4">查無資料</td></tr>`);
+                    document.getElementById('paginationArea').style.display = 'none';
+                    return;
+                }
+                setMsg(`共 ${data.totalElements} 筆，第 ${data.page + 1} / ${data.totalPages} 頁`);
+                document.getElementById('paginationArea').style.removeProperty('display');
+
+                setBody(data.content.map(r => `
+                    <tr style="cursor:pointer" onclick="openContent('${esc(r.messageId)}')">
+                        <td class="text-nowrap">${r.msgDate || ''}</td>
+                        <td class="text-nowrap">${r.messageType || ''}</td>
+                        <td class="text-nowrap">${r.osn || ''}</td>
+                        <td class="text-nowrap">${r.tag20 || ''}</td>
+                        <td class="text-nowrap">${r.tag21 || ''}</td>
+                        <td class="text-nowrap">${amlBadge(r.amlFlag, r.amlStatus)}</td>
+                        <td class="text-nowrap">${r.sender || ''}</td>
+                        <td class="text-nowrap">${r.receiver || ''}</td>
+                        <td class="text-nowrap">${r.valueDate || ''}</td>
+                        <td class="text-nowrap">${r.currency || ''}</td>
+                        <td class="text-nowrap text-end">${r.amount != null ? Number(r.amount).toLocaleString() : ''}</td>
+                        <td class="text-nowrap">${r.flowStatus || ''}</td>
+                        <td class="text-nowrap">${r.reference || ''}</td>
+                        <td class="text-nowrap">${r.unitCode || ''}</td>
+                        <td class="text-nowrap">${r.pdeFlag || ''}</td>
+                    </tr>`).join(''));
+
+                renderPagination(data.page, data.totalPages);
+            })
+            .catch(err => {
+                console.error(err);
+                setMsg('查詢失敗');
+                setBody(`<tr><td colspan="${COLS}" class="text-center text-danger py-4">查詢發生錯誤，請稍後再試</td></tr>`);
+            });
+    }
+
+    function openContent(messageId) {
+        document.getElementById('modalMsgId').textContent = messageId;
+        document.getElementById('modalLoading').style.display = '';
+        document.getElementById('modalContent').style.display = 'none';
+        document.getElementById('modalEmpty').style.display = 'none';
+        new bootstrap.Modal(document.getElementById('contentModal')).show();
+
+        axios.get('/api/incoming/' + encodeURIComponent(messageId) + '/content')
+            .then(res => {
+                const d = res.data;
+                document.getElementById('modalLoading').style.display = 'none';
+                if (!d.mtContent && !d.mxContent) {
+                    document.getElementById('modalEmpty').style.display = '';
+                    return;
+                }
+                document.getElementById('mxContentPre').textContent = d.mxContent || '（無 MX 電文）';
+                document.getElementById('mtContentPre').textContent = d.mtContent || '（無 MT 電文）';
+                // 預設顯示有內容的那一頁
+                showTab(d.mxContent ? 'mx' : 'mt');
+                document.getElementById('modalContent').style.display = '';
+            })
+            .catch(() => {
+                document.getElementById('modalLoading').style.display = 'none';
+                document.getElementById('modalEmpty').textContent = '載入電文失敗';
+                document.getElementById('modalEmpty').style.display = '';
+            });
+    }
+
+    function showTab(tab) {
+        document.getElementById('mxContentPre').style.display = tab === 'mx' ? '' : 'none';
+        document.getElementById('mtContentPre').style.display = tab === 'mt' ? '' : 'none';
+        document.getElementById('tab-mx').classList.toggle('active', tab === 'mx');
+        document.getElementById('tab-mt').classList.toggle('active', tab === 'mt');
+    }
+
+    function renderPagination(current, total) {
+        const ul = document.getElementById('pageList');
+        const pages = [];
+        pages.push(`<li class="page-item ${current === 0 ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="doSearch(${current}); return false;">&laquo;</a></li>`);
+        const start = Math.max(0, current - 2), end = Math.min(total - 1, current + 2);
+        for (let i = start; i <= end; i++) {
+            pages.push(`<li class="page-item ${i === current ? 'active' : ''}">
+                <a class="page-link" href="#" onclick="doSearch(${i + 1}); return false;">${i + 1}</a></li>`);
+        }
+        pages.push(`<li class="page-item ${current >= total - 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="doSearch(${current + 2}); return false;">&raquo;</a></li>`);
+        ul.innerHTML = pages.join('');
+        document.getElementById('pageInfo').textContent = `第 ${current + 1} 頁，共 ${total} 頁`;
+    }
+
+    function resetForm() {
+        document.getElementById('incomingSearchForm').reset();
+        setMsg('*** 無資料顯示 ***');
+        setBody(`<tr><td colspan="${COLS}" class="text-center text-muted py-4">請輸入條件後開始查詢</td></tr>`);
+        document.getElementById('queryTime').textContent = '';
+        document.getElementById('paginationArea').style.display = 'none';
+    }
+
+    function amlBadge(flag, status) {
+        if (!flag && !status) return '';
+        const f = flag ? `<span class="badge bg-secondary me-1">${flag}</span>` : '';
+        const s = status ? `<span class="badge ${status === 'PASS' ? 'bg-success' : status === 'REJECT' ? 'bg-danger' : 'bg-warning text-dark'}">${status}</span>` : '';
+        return f + s;
+    }
+
+    function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+    function setMsg(t) { document.getElementById('resultMsg').textContent = t; }
+    function setBody(h) { document.getElementById('resultBody').innerHTML = h; }
+    function esc(s) { return (s || '').replace(/'/g, "\\'"); }
 </script>
 </body>
 </html>

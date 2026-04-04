@@ -38,7 +38,9 @@ public class MxGenericParser extends AbstractPdfParser {
 
         Matcher typeMatcher = MX_TYPE_PATTERN.matcher(text);
         if (typeMatcher.find()) {
-            msg.setMessageType(typeMatcher.group(0).toLowerCase());
+            String mxType = typeMatcher.group(0).toLowerCase();
+            msg.setMxType(mxType);
+            msg.setMessageType(mxType);
         }
 
         String msgId = firstNonNull(extractXml(text, "MsgId"), extractXml(text, "Id"));
@@ -77,7 +79,7 @@ public class MxGenericParser extends AbstractPdfParser {
                 extractXml(text, "OrgnlEndToEndId")
         ));
 
-        msg.setContent(text);
+        msg.setMxContent(text);
         return msg;
     }
 
