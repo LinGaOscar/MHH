@@ -1,0 +1,72 @@
+# MT ↔ MX 對照表（進電 + 出電合併）
+
+> 來源：SWAL `FBSWTW_OWNER.SWMIMSG`（進電）、`FBSWTW_OWNER.SWMOMSG`（出電）
+> 最後更新：2026-04-04
+
+SWAL 對 MT 電文已完成 MT ↔ MX 互轉，同一 `SW_UMID` 可同時帶有 MT 與 MX 兩種版本。
+下表列出各 MT 類型碼（`MESG_TYPE`）與 MX 類型碼（`MX_MESG_TYPE`）的可對應組合。
+
+---
+
+## 進電（SWMIMSG）MT ↔ MX 對照
+
+| MT 類型碼 | MT 電文名稱 | MX 類型碼 | MX 電文名稱 |
+|:---------:|------------|:---------:|------------|
+| **012** | Delivery Notification | `xsys.003.001.01` | System Message Acknowledgement |
+| **019** | Abort Notification | `xsys.003.001.01` | System Message Acknowledgement |
+| **103** | Single Customer Credit Transfer | `pacs.008.001.08` | FI to FI Customer Credit Transfer |
+| **103** | Single Customer Credit Transfer | `pacs.004.001.09` | Payment Return |
+| **105** | EDIFACT Envelope | `camt.105.001.02` | Cash Management Proprietary Data |
+| **191** | Free Format（MT1xx 查詢回覆） | `camt.106.001.02` | Cash Management Proprietary Data |
+| **199** | Free Format（MT1xx） | `pacs.002.001.10` | Payment Status Report |
+| **202** | Financial Institution Transfer | `pacs.004.001.09` | Payment Return |
+| **210** | Notice to Receive | `camt.057.001.06` | Notification To Receive |
+| **299** | Free Format（MT2xx） | `pacs.002.001.19` | Payment Status Report |
+| **910** | Confirmation of Debit | `camt.054.001.08` | Bank to Customer Debit Credit Notification |
+| **950** | Statement Message | `camt.053.001.08` | Bank to Customer Statement |
+
+---
+
+## 出電（SWMOMSG）MT ↔ MX 對照
+
+| MT 類型碼 | MT 電文名稱 | MX 類型碼 | MX 電文名稱 |
+|:---------:|------------|:---------:|------------|
+| **103** | Single Customer Credit Transfer | `pacs.008.001.08` | FI to FI Customer Credit Transfer |
+| **110** | Advice of Cheque(s) | `camt.107.001.01` | Cheque Cancellation Or Stop Request |
+| **191** | Free Format（MT1xx 查詢回覆） | `camt.106.001.02` | Cash Management Proprietary Data |
+| **199** | Free Format（MT1xx） | `pacs.002.001.10` | Payment Status Report |
+| **202** | Financial Institution Transfer | `pacs.004.001.09` | Payment Return |
+| **202** | Financial Institution Transfer | `pacs.009.001.08` | Financial Institution Credit Transfer |
+| **210** | Notice to Receive | `camt.057.001.06` | Notification To Receive |
+
+---
+
+## 進出電差異比較
+
+| MT | 進電 MX 對應 | 出電 MX 對應 | 備註 |
+|----|-------------|-------------|------|
+| **012** | `xsys.003` | — | 進電專屬系統 ACK |
+| **019** | `xsys.003` | — | 進電專屬系統 NAK |
+| **103** | `pacs.008`、`pacs.004` | `pacs.008` | 進電多一種退款情境 |
+| **105** | `camt.105` | — | 進電專屬 EDIFACT |
+| **110** | — | `camt.107` | 出電專屬支票通知 |
+| **191** | `camt.106` | `camt.106` | 進出電相同 |
+| **199** | `pacs.002` | `pacs.002` | 進出電相同 |
+| **202** | `pacs.004` | `pacs.004`、`pacs.009` | 出電多一種正常匯款 |
+| **210** | `camt.057` | `camt.057` | 進出電相同 |
+| **299** | `pacs.002` | — | 進電專屬 MT2xx Free Format |
+| **910** | `camt.054` | — | 進電專屬借貸通知 |
+| **950** | `camt.053` | — | 進電專屬對帳單 |
+
+---
+
+## 備註
+
+- MT **103** 進電同時對應 `pacs.008`（正常匯款）與 `pacs.004`（退款），以 MX 類型碼區分
+- MT **202** 出電同時對應 `pacs.009`（正常行際調撥）與 `pacs.004`（退款），以 MX 類型碼區分
+- MHH 儲存策略：`MT_TYPE`（搜尋表）存 MT 類型碼；`MX_TYPE` 存 MX 類型碼；`MESSAGE_TYPE` 為顯示用衍生值（有 MX 取 MX，否則 `"MT" + MT_TYPE`）
+
+## 相關文件
+
+- [1_message_types.md](1_message_types.md) — 各電文類型重要解析欄位
+- [3_swal_mhh_mapping.md](3_swal_mhh_mapping.md) — SWAL → MHH 欄位轉換對照

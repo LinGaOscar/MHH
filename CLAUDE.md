@@ -101,15 +101,20 @@ Batch jobs implement `MhhJob` (not Spring Batch):
 
 Entity → table mapping:
 
-| Entity | Table |
-|--------|-------|
-| `MsgIncoming` | `MSG_INCOMING` |
-| `MsgOutgoing` | `MSG_OUTGOING` |
-| `JobConf` | `JOBS_CONF` |
-| `JobLog` | `JOBS_LOGS` |
-| `SysLog` | `SYS_LOGS` |
-| `UserLog` | `USER_LOGS` |
-| `SwiftMessageBase` | (abstract `@MappedSuperclass`) |
+| Entity | Table | Notes |
+|--------|-------|-------|
+| `MsgIncoming` | `MSG_INCOMING` | Search/filter fields only |
+| `MsgIncomingTx` | `MSG_INCOMING_TX` | Raw MT/MX content (`@Lob`) |
+| `MsgOutgoing` | `MSG_OUTGOING` | Search/filter fields only |
+| `MsgOutgoingTx` | `MSG_OUTGOING_TX` | Raw MT/MX content (`@Lob`) |
+| `JobConf` | `JOBS_CONF` | |
+| `JobLog` | `JOBS_LOGS` | |
+| `SysLog` | `SYS_LOGS` | |
+| `UserLog` | `USER_LOGS` | |
+| `SwiftMessageBase` | (abstract `@MappedSuperclass`) | Shared search fields |
+| `SwiftMessageTxBase` | (abstract `@MappedSuperclass`) | Shared TX content fields |
+
+**Search/TX split:** `MSG_INCOMING` and `MSG_OUTGOING` hold indexed search fields. Raw message content (`MT_CONTENT`, `MX_CONTENT` as `NVARCHAR(MAX)`) lives in the separate `_TX` tables, loaded only on detail view. `mtContent`/`mxContent` on `SwiftMessageBase` are `@Transient` — jobs write them to the TX table explicitly.
 
 `MSG_DOWNLOAD` and `MSG_APPROVAL` are in the schema SQL but not yet mapped as entities.
 
@@ -133,6 +138,10 @@ Entity → table mapping:
 |------|------------|-------|
 | `GET /api/auth/status` | `UserLoginController` | Auth status + devMode flag |
 | `GET /api/user-trail` | `UserTrailController` | Paginated `USER_LOGS` with filters (userId, action, status, dateFrom, dateTo) |
+| `GET /api/incoming` | `MsgIncomingController` | Paginated MSG_INCOMING with 16 filter params (dateFrom/To, msgType, sender, receiver, amountFrom/To, reference, tag20/21, osnFrom/To, unitCode, amlFlag, amlStatus, flowStatus) |
+| `GET /api/incoming/{messageId}/content` | `MsgIncomingController` | Fetch raw MT/MX content from MSG_INCOMING_TX |
+| `GET /api/outgoing` | `MsgOutgoingController` | Same as incoming; uses isnFrom/isnTo instead of osn |
+| `GET /api/outgoing/{messageId}/content` | `MsgOutgoingController` | Fetch raw MT/MX content from MSG_OUTGOING_TX |
 
 **Frontend stack:** Bootstrap 5.3.2, Bootstrap Icons 1.11.2, Vue 3, Axios (all via CDN in `layout.html`). Custom styles in `static/css/main.css` — white/cyan/light-blue theme using CSS variables.
 
@@ -145,5 +154,7 @@ Entity → table mapping:
 
 - [docs/1_overview.md](docs/1_overview.md) — architecture diagrams and design decisions
 - [docs/4_design/README.md](docs/4_design/README.md) — technical specs and build progress
-- [docs/6_MTMXtype.md](docs/6_MTMXtype.md) — SWIFT message type specifications
-- [docs/7_todo.md](docs/7_todo.md) — ongoing tasks and implementation status
+- [docs/7_msg/README.md](docs/7_msg/README.md) — SWIFT message reference (index)
+  - [1_message_types.md](docs/7_msg/1_message_types.md) — all MT/MX types and key parse fields
+  - [2_mtmx_mapping.md](docs/7_msg/2_mtmx_mapping.md) — MT ↔ MX mapping for incoming and outgoing
+  - [3_swal_mhh_mapping.md](docs/7_msg/3_swal_mhh_mapping.md) — SWAL → MHH field mapping with search fields
