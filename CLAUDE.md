@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build & Run Commands
 
-This is a Maven multi-module project (Java 21, Spring Boot 3.4.1).
+This is a Maven multi-module project (Java 21, Spring Boot 4.0.5).
 
 ```bash
 # Full build (skip tests for speed)

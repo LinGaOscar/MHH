@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.1</version> <!-- Spring Boot 3.4.x (Note: Spring Boot 4 is not yet released as stable, adopting latest 3.x for stability as per context) -->
+        <version>4.0.5</version>
         <relativePath/>
     </parent>
     <groupId>com.mhh</groupId>
