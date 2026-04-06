@@ -9,11 +9,11 @@
 | 編號 | 文件名稱 | 對象 | 說明 |
 |----------|----------|----------|----------|
 | 1 | [系統全局概覽](docs/1.overview.md) | 所有人 | 系統架構圖與數據流概覽，**建議首篇閱讀** |
-| 2 | [快速啟動指南](docs/2.quickstart.md) | 開發者 / IT | 包含 DEV 開發與 PROD 打包啟用步驟 |
+| 2 | [快速啟動指南 (DEV)](docs/2.quickstart.md) | 開發者 | 專注於開發環境建置與本地啟動步驟 |
 | 3 | [使用者操作手冊](docs/3.user_guide.md) | 一般使用者 | 登入、查詢、下載與雙人審核放行流程 |
-| 4.1 | [技術設計導覽](docs/4.design_guide.md) | 開發者 / 維運 | 包含 AP、Batch、DB 與前端視覺設計細節 |
-| 5 | [維運管理手冊](docs/5.operations.md) | IT 維運 | 日誌監控、故障排除與 SQL 監控語句 |
+| 4.1 | [技術設計導覽](docs/4.design_guide.md) | 開發者 | 包含 AP、Batch、DB 與前端視覺設計細節 |
 | 7.1 | [電文規格導覽](docs/7.msg_guide.md) | 業務 / 測試 | MT/MX 電文欄位對照與 SWAL 映射關係 |
+| 9 | [生產環境維運手冊](docs/9.prod_operations.md) | IT 維運 | **PROD 專屬**：部署、日誌監控、故障排除與 SQL 監控 |
 
 ---
 
