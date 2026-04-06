@@ -20,6 +20,9 @@ out/
 # Visual Studio Code
 .vscode/
 
+# Claude Code
+.claude/
+
 # Eclipse
 .settings/
 .classpath
