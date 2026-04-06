@@ -150,11 +150,19 @@ Entity → table mapping:
 - [mhh-ap/src/main/resources/application.yml](mhh-ap/src/main/resources/application.yml) — port 8080, SQL Server, Thymeleaf, devtools, dev-mode flag
 - [mhh-batch/src/main/resources/application.yml](mhh-batch/src/main/resources/application.yml) — file paths (`d:/MHH_FILES/`), Oracle datasource, job refresh rate
 
+## Tests
+
+No test classes exist in the project yet. `mvn test` will compile but run nothing. When adding tests, place them under `src/test/java/com/mhh/<module>/` following the standard Maven layout.
+
 ## Documentation
 
-- [docs/1_overview.md](docs/1_overview.md) — architecture diagrams and design decisions
-- [docs/4_design/README.md](docs/4_design/README.md) — technical specs and build progress
-- [docs/7_msg/README.md](docs/7_msg/README.md) — SWIFT message reference (index)
-  - [1_message_types.md](docs/7_msg/1_message_types.md) — all MT/MX types and key parse fields
-  - [2_mtmx_mapping.md](docs/7_msg/2_mtmx_mapping.md) — MT ↔ MX mapping for incoming and outgoing
-  - [3_swal_mhh_mapping.md](docs/7_msg/3_swal_mhh_mapping.md) — SWAL → MHH field mapping with search fields
+- [docs/1.overview.md](docs/1.overview.md) — architecture diagrams and design decisions
+- [docs/4.design_ap.md](docs/4.design_ap.md) — mhh-ap technical spec
+- [docs/4.design_batch.md](docs/4.design_batch.md) — mhh-batch technical spec
+- [docs/4.design_db.md](docs/4.design_db.md) — database design
+- [docs/4.design_view.md](docs/4.design_view.md) — frontend/view spec
+- [docs/7.msg_guide.md](docs/7.msg_guide.md) — SWIFT message reference (index)
+  - [docs/7.msg_types.md](docs/7.msg_types.md) — all MT/MX types and key parse fields
+  - [docs/7.msg_mapping.md](docs/7.msg_mapping.md) — MT ↔ MX mapping for incoming and outgoing
+  - [docs/7.swal_mapping.md](docs/7.swal_mapping.md) — SWAL → MHH field mapping with search fields
+- [docs/6.MTMXtype.md](docs/6.MTMXtype.md) — MT/MX type reference table
